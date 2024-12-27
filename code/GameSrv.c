@@ -76,7 +76,7 @@ void GameSrv_Free(GameSrv *srv)
     array_free(&srv->free_items_slots);
     array_free(&srv->agents);
     array_free(&srv->free_agents_slots);
-    array_free(&srv->encTextBuilder);
+    array_free(&srv->text_builder);
     Db_Close(&srv->database);
 }
 
@@ -94,6 +94,12 @@ GameSrvMsg* GameSrv_BuildMsg(GameSrv *srv, uint16_t header)
     memset(&srv->srv_msg, 0, sizeof(srv->srv_msg));
     srv->srv_msg.header = header;
     return &srv->srv_msg;
+}
+
+array_uint16_t* GameSrv_GetTextBuilder(GameSrv *srv)
+{
+    array_clear(&srv->text_builder);
+    return &srv->text_builder;
 }
 
 int GameConnection_SendMessage(GameConnection *conn, GameSrvMsg *msg, size_t size)

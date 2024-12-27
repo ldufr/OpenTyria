@@ -131,8 +131,7 @@ void GameSrv_SendInvalidCommand(GameSrv *srv, uint16_t player_id)
     msg.ptr = L"Unknown command";
     msg.len = (sizeof(L"Unknown command") - 1) / 2;
 
-    array_uint16_t *builder = &srv->encTextBuilder;
-    array_clear(builder);
+    array_uint16_t *builder = GameSrv_GetTextBuilder(srv);
     GmText_BuildLiteral(builder, msg);
     msg.ptr = builder->ptr;
     msg.len = builder->len;
@@ -167,9 +166,7 @@ int GameSrv_HandleLocalMessage(GameSrv *srv, uint16_t player_id, Channel channel
         return err;
     }
 
-    array_uint16_t *builder = &srv->encTextBuilder;
-    array_clear(builder);
-
+    array_uint16_t *builder = GameSrv_GetTextBuilder(srv);
     GmText_BuildLiteral(builder, msg);
 
     msg.ptr = builder->ptr;
