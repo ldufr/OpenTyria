@@ -22,6 +22,11 @@ int sys_free(void)
     return 0;
 }
 
+int sys_errno(void)
+{
+    return (int)GetLastError();
+}
+
 int sys_get_utc_time(UtcTime *time)
 {
     SYSTEMTIME system_time;

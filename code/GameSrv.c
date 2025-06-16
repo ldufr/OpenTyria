@@ -51,7 +51,7 @@ int GameSrv_Setup(GameSrv *srv)
         return err;
     }
 
-    const char *path = "D:/Dev/OpenTyria-c/db/database.db";
+    const char *path = "db/database.db";
     if ((err = Db_Open(&srv->database, path)) != 0) {
         return err;
     }
@@ -1216,6 +1216,8 @@ void GameSrv_ProcessInternalMessages(GameSrv *srv)
             break;
         case AdminCmd_TransferUser:
             GameSrv_HandleTransferUserCmd(srv, &msg->transfer_user);
+            break;
+        default:
             break;
         }
     }

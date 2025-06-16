@@ -2,6 +2,7 @@
 
 int sys_init(void);
 int sys_free(void);
+int sys_errno(void);
 
 typedef struct UtcTime {
     int year;
@@ -20,6 +21,7 @@ int  sys_socket(uintptr_t *result, int af, int type, int protocol);
 void sys_closesocket(uintptr_t fd);
 
 int  sys_enable_nonblocking(uintptr_t fd, bool enable);
+int  sys_set_reuseaddr(uintptr_t fd, bool enable);
 int  sys_bind(uintptr_t fd, const struct sockaddr *addr, int namelen);
 int  sys_listen(uintptr_t fd, int backlog);
 int  sys_accept(uintptr_t *result, uintptr_t fd, struct sockaddr *addr, int *addrlen);
@@ -43,7 +45,13 @@ int sys_thread_create(Thread *thread, sys_thread_start_t start, void *param);
 int sys_thread_join(Thread *thread);
 
 typedef struct Mutex {
+#if PLATFORM_WINDOWS
     CRITICAL_SECTION section;
+#elif PLATFORM_LINUX
+    pthread_mutex_t section;
+#else
+    #error "Unsupported platform"
+#endif
 } Mutex;
 
 int  sys_mutex_init(Mutex *mtx);

@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef UNREFERENCED_PARAMETER
+#define UNREFERENCED_PARAMETER(expr) ((void)expr)
+#endif
+
 #define CAST_STRUCT_FROM_MEMBER(ptr, type, member) \
     ((type *)((char *)(ptr) - offsetof(type, member)))
 

@@ -12,6 +12,10 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+
+#define PLATFORM_WINDOWS 0
+#define PLATFORM_LINUX   0
+
 #ifdef _WIN32
 # pragma warning(disable: 4201) // nonstandard extension used: nameless struct/union
 # pragma warning(disable: 4214) // nonstandard extension used: bit field types other than int
@@ -21,7 +25,19 @@
 # include <Ws2tcpip.h>
 # include <bcrypt.h>
 # include <winternl.h>
+# undef PLATFORM_WINDOWS
+# define PLATFORM_WINDOWS 1
 #else // _WIN32
+# include <unistd.h>
+# include <fcntl.h>
+# include <pthread.h>
+# include <sys/socket.h>
+# include <sys/epoll.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <errno.h>
+# undef PLATFORM_LINUX
+# define PLATFORM_LINUX 1
 #endif
 
 #include <assert.h>
@@ -130,6 +146,7 @@
 #include "GmParty.c"
 #include "GmTitleConstData.c"
 #include "GmText.c"
+#include "iocp.c"
 #include "int.c"
 #include "logs.c"
 #include "msgdefs.c"
@@ -137,8 +154,16 @@
 #include "network.c"
 #include "random.c"
 #include "stream.c"
+
+#if PLATFORM_WINDOWS
 #include "win32/iocp_win32.c"
 #include "win32/sys_win32.c"
+#elif PLATFORM_LINUX
+#include "linux/iocp_linux.c"
+#include "linux/sys_linux.c"
+#else
+#error "Unknown platform"
+#endif
 
 #if defined(COMPILE_TESTS)
 #include "tests.c"

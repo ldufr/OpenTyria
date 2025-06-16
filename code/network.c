@@ -35,11 +35,8 @@ bool parse_ipv4(SocketAddrV4 *result, const char *input, size_t len)
         return false;
     }
 
-    result->bytes[0] = sockaddr->sin_addr.S_un.S_un_b.s_b1;
-    result->bytes[1] = sockaddr->sin_addr.S_un.S_un_b.s_b2;
-    result->bytes[2] = sockaddr->sin_addr.S_un.S_un_b.s_b3;
-    result->bytes[3] = sockaddr->sin_addr.S_un.S_un_b.s_b4;
-
+    STATIC_ASSERT(sizeof(result->bytes) == sizeof(sockaddr->sin_addr.s_addr));
+    memcpy(result->bytes, &sockaddr->sin_addr.s_addr, sizeof(result->bytes));
     return true;
 }
 
@@ -85,8 +82,8 @@ bool parse_ipv6(SocketAddrV6 *result, const char *input, size_t len)
         return false;
     }
 
-    STATIC_ASSERT(sizeof(result->bytes) == sizeof(sockaddr->sin6_addr.u.Byte));
-    memcpy(result->bytes, sockaddr->sin6_addr.u.Byte, sizeof(result->bytes));
+    STATIC_ASSERT(sizeof(result->bytes) == sizeof(sockaddr->sin6_addr.s6_addr));
+    memcpy(result->bytes, sockaddr->sin6_addr.s6_addr, sizeof(result->bytes));
 
     return true;
 }
@@ -110,15 +107,12 @@ void SocketAddr_FromSocketAddrStorage(SocketAddr *result, struct sockaddr_storag
     case AF_INET:
         result->af = AddressFamily_V4;
         result->v4.port = ntohs(((struct sockaddr_in *)storage)->sin_port);
-        result->v4.bytes[0] = ((struct sockaddr_in *)storage)->sin_addr.S_un.S_un_b.s_b1;
-        result->v4.bytes[1] = ((struct sockaddr_in *)storage)->sin_addr.S_un.S_un_b.s_b2;
-        result->v4.bytes[2] = ((struct sockaddr_in *)storage)->sin_addr.S_un.S_un_b.s_b3;
-        result->v4.bytes[3] = ((struct sockaddr_in *)storage)->sin_addr.S_un.S_un_b.s_b4;
+        memcpy(result->v4.bytes, &((struct sockaddr_in *)storage)->sin_addr.s_addr, sizeof(result->v4.bytes));
         break;
     case AF_INET6:
         result->af = AddressFamily_V6;
         result->v6.port = ntohs(((struct sockaddr_in6 *)storage)->sin6_port);
-        memcpy(result->v6.bytes, ((struct sockaddr_in6 *)storage)->sin6_addr.u.Byte, sizeof(result->v6.bytes));
+        memcpy(result->v6.bytes, ((struct sockaddr_in6 *)storage)->sin6_addr.s6_addr, sizeof(result->v6.bytes));
         break;
     default:
         abort();
@@ -132,15 +126,12 @@ void SocketAddr_WriteSocketAddrStorage(struct sockaddr *result, SocketAddr *addr
     case AddressFamily_V4:
         result->sa_family = AF_INET;
         ((struct sockaddr_in*)result)->sin_port = htons(addr->v4.port);
-        ((struct sockaddr_in*)result)->sin_addr.S_un.S_un_b.s_b1 = addr->v4.bytes[0];
-        ((struct sockaddr_in*)result)->sin_addr.S_un.S_un_b.s_b2 = addr->v4.bytes[1];
-        ((struct sockaddr_in*)result)->sin_addr.S_un.S_un_b.s_b3 = addr->v4.bytes[2];
-        ((struct sockaddr_in*)result)->sin_addr.S_un.S_un_b.s_b4 = addr->v4.bytes[3];
+        memcpy(&((struct sockaddr_in*)result)->sin_addr.s_addr, addr->v4.bytes, sizeof(addr->v4.bytes));
         break;
     case AddressFamily_V6:
         result->sa_family = AF_INET6;
         ((struct sockaddr_in6*)result)->sin6_port = htons(addr->v4.port);
-        memcpy(&((struct sockaddr_in6*)result)->sin6_addr.u.Byte, addr->v6.bytes, sizeof(addr->v6.bytes));
+        memcpy(&((struct sockaddr_in6*)result)->sin6_addr.s6_addr, addr->v6.bytes, sizeof(addr->v6.bytes));
         break;
     default:
         abort();
@@ -204,7 +195,7 @@ bool snprint_sockaddr(char *buffer, size_t size, struct sockaddr *addr, size_t a
         log_error(
             "Failed to stringify sockaddr (family: %hu), err: %d",
             addr->sa_family,
-            WSAGetLastError()
+            sys_errno()
         );
         return false;
     }

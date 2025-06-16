@@ -117,3 +117,8 @@ float clampf(float val, float min, float max)
     if (val > max) return max;
     return val;
 }
+
+uint32_t u32min(uint32_t a, uint32_t b)
+{
+    return a < b ? a : b;
+}

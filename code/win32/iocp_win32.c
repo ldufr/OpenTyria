@@ -56,7 +56,7 @@ __kernel_entry NTSYSCALLAPI NTSTATUS NTAPI NtSetInformationFile(
     FILE_INFORMATION_CLASS FileInformationClass
 );
 
-IoSourceState* IoSourceState_create()
+IoSourceState* IoSourceState_create(void)
 {
     IoSourceState *ret = malloc(sizeof(*ret));
     memset(ret, 0, sizeof(*ret));
@@ -74,32 +74,6 @@ void IoSourceState_release(IoSourceState *state)
 IoSourceState* IoSourceState_from_overlapped(OVERLAPPED *ovlp)
 {
     return CAST_STRUCT_FROM_MEMBER(ovlp, IoSourceState, ovlp);
-}
-
-void IoSource_setup(IoSource *source, uintptr_t socket)
-{
-    source->socket = socket;
-    source->state = IoSourceState_create();
-}
-
-void IoSource_free(IoSource *source)
-{
-    sys_closesocket(source->socket);
-    IoSourceState_release(source->state);
-}
-
-IoSource IoSource_take(IoSource *source)
-{
-    IoSource result = *source;
-    source->socket = 0;
-    source->state = NULL;
-    return result;
-}
-
-void IoSource_reset(IoSource *source)
-{
-    IoSource temp = IoSource_take(source);
-    IoSource_free(&temp);
 }
 
 int afd_poll(HANDLE handle, LPAFD_POLL_INFO params, LPOVERLAPPED ovlp)
@@ -230,7 +204,7 @@ int iocp_deregister(Iocp *iocp, IoSource *source)
 
 int iocp_poll(Iocp *iocp, ArrayEvent *events, uint32_t timeout_ms)
 {
-    OVERLAPPED_ENTRY entries[256];
+    OVERLAPPED_ENTRY entries[IOCP_POLL_BATCH_MAX_COUNT];
 
     ULONG removed;
     BOOL bSuccess = GetQueuedCompletionStatusEx(
