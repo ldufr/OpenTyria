@@ -320,7 +320,7 @@ int AuthSrv_Setup(AuthSrv *srv)
     }
 
     // @Cleanup: How to move that out.
-    const char *path = "D:/Dev/OpenTyria-c/db/database.db";
+    const char *path = "db/database.db";
     if ((err = Db_Open(&srv->database, path)) != 0) {
         iocp_free(&srv->iocp);
         return ERR_UNSUCCESSFUL;
@@ -893,13 +893,21 @@ int AuthSrv_Bind(AuthSrv *srv, const char *addr, size_t addr_len)
         return ERR_UNSUCCESSFUL;
     }
 
+#if !PLATFORM_WINDOWS
+    if ((err = sys_set_reuseaddr(fd, true)) != 0) {
+        sys_closesocket(fd);
+        return err;
+    }
+#endif
+
     if ((err = sys_bind(fd, &sa, sizeof(sa))) != 0) {
-        log_error("Failed to bind to '%.*s', err: %d", addr_len, addr);
+        log_error("Failed to bind to '%.*s', err: %d", (int) addr_len, addr, err);
+        sys_closesocket(fd);
         return ERR_UNSUCCESSFUL;
     }
 
     if ((err = sys_listen(fd, 256)) != 0) {
-        log_error("Failed to listen to '%.*s', err: %d", addr_len, addr);
+        log_error("Failed to listen to '%.*s', err: %d", (int) addr_len, addr, err);
         sys_closesocket(fd);
         return ERR_UNSUCCESSFUL;
     }
@@ -921,6 +929,7 @@ int AuthSrv_Bind(AuthSrv *srv, const char *addr, size_t addr_len)
         return ERR_UNSUCCESSFUL;
     }
 
+    log_info("AuthSrv listen to '%.*s'", (int) addr_len, addr);
     stbds_hmput(srv->objects, token, obj);
     return ERR_OK;
 }

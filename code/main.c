@@ -1,7 +1,6 @@
 #pragma once
 
 static const char *addresses[] = {
-    "127.0.0.1:80",
     "127.0.0.1:6112",
     "127.0.0.1:6113",
 };

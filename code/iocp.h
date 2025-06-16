@@ -3,6 +3,8 @@
 #define IOCPF_READ  (1)
 #define IOCPF_WRITE (2)
 
+#define IOCP_POLL_BATCH_MAX_COUNT (256)
+
 typedef struct IoSourceState IoSourceState;
 
 typedef struct Event {
