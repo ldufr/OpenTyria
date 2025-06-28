@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+# from linux_process import *
 from process import *
 
 @dataclass
@@ -22,6 +23,9 @@ class pygw(object):
         tmp = self.scanner.find(b'\xD9\x45\x08\xFF\x75\x10\xFF\x75\x0C\x51\xB9', +0xB)
         self.camera_ptr, = proc.read(tmp)
 
+        tmp = self.scanner.find(b'\x6B\xC6\x7C\x5E\x05', +0x5)
+        self.areas_info_ptr, = proc.read(tmp)
+
     def get_game_ctx(self):
         tmp, = self.proc.read(self.ctx)
         return self.proc.read(tmp + 24)[0]
@@ -43,8 +47,12 @@ class pygw(object):
         return Array(*self.proc.read(self.agent_ptr, 'IIII'))
 
     def get_player_id(self):
-        tmp = self.get_char_ctx()
-        return self.proc.read(tmp + 0x2A4)[0]
+        ctx = self.get_char_ctx()
+        return self.proc.read(ctx + 0x2A4)[0]
+
+    def get_map_id(self):
+        ctx = self.get_char_ctx()
+        return self.proc.read(ctx + 0x198, 'I')[0]
 
     def get_player_by_id(self, player_id):
         players = self.get_player_array()
@@ -77,3 +85,6 @@ class pygw(object):
 
     def get_player_array(self):
         return Array(*self.proc.read(self.get_world_ctx() + 0x80C, 'IIII'))
+
+    def get_map_file_id_by_map_id(self, map_id):
+        return self.proc.read(self.areas_info_ptr + (0x7C * map_id) + 0x68)[0]

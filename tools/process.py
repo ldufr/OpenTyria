@@ -761,6 +761,8 @@ class ProcessDebugger(object):
         return '<ProcessDebugger for Process %d>' % self.proc.id
 
     def add_hook(self, addr, hook):
+        if addr in self.breakpoints:
+            raise RuntimeError("Can't set two breakpoints on the same address")
         new_bp = ProcessHook(self.proc, addr, hook)
         if addr in self.breakpoints:
             old_bp = self.breakpoints[addr]
@@ -840,7 +842,7 @@ class ProcessDebugger(object):
             ctx.Eip -= 1
             ctx.EFlags |= 0x100 # TRAP_FLAG
             thread.set_context(ctx)
-        return _DBG_CONTINUE
+            return _DBG_CONTINUE
 
     def _on_breakpoint64(self, thread, breakpoint):
         ctx = thread.context()
@@ -870,7 +872,7 @@ class ProcessDebugger(object):
             ctx.Rip -= 1
             ctx.EFlags |= 0x100 # TRAP_FLAG
             thread.set_context(ctx)
-        return _DBG_CONTINUE
+            return _DBG_CONTINUE
 
     def _on_breakpoint(self, thread, addr):
         breakpoint = self.breakpoints.get(addr, None)

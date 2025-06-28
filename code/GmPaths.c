@@ -561,7 +561,7 @@ PathNode *PathReversePathNode(PathNode *head)
 
 bool PathFinding(PathContext *context, GmPos src_pos, GmPos dst_pos, WaypointArray *waypoints)
 {
-    const float MAX_COST = 3000.f;
+    const float MAX_COST = INFINITY;
 
     PathTrapezoid *src_trap, *dst_trap;
 

@@ -3,6 +3,7 @@ import struct
 import math
 
 from dataclasses import dataclass
+# from linux_process import *
 from process import *
 from pygw import *
 
@@ -51,6 +52,7 @@ class Window(arcade.Window):
         self.build_draw_list()
 
         self.camera = arcade.Camera(self.width, self.height)
+        self.hud_camera = arcade.Camera(self.width, self.height)
 
     def detect_bounds(self):
         self.min_x = float('inf')
@@ -79,6 +81,8 @@ class Window(arcade.Window):
             for trap in traps:
                 trap.color = default_color
                 trap.default_color = default_color
+                # if trap.trap_id == 8:
+                #     trap.color = arcade.color.YELLOW
 
     def create_lookup_dict(self):
         self.lookup = {}
@@ -111,6 +115,7 @@ class Window(arcade.Window):
                 if y < trap.yb or trap.yt < y:
                     continue
                 if self.is_in_trapezoid(trap, x, y):
+                    print(f'Found trap in plane {plane}')
                     return trap
 
     def window_coord_to_world_coord(self, x, y):
@@ -158,9 +163,8 @@ class Window(arcade.Window):
         self.elems = elems
 
     def on_draw(self):
-        x, y, plane = self.game.get_agent_pos(self.game.get_agent_id_by_player_id())
-        # x, y = self.game.get_camera_pos()
-        x, y = self.world_coord_to_window_coord(x, y)
+        px, py, plane = self.game.get_agent_pos(self.game.get_agent_id_by_player_id())
+        x, y = self.world_coord_to_window_coord(px, py)
 
         arcade.start_render()
         self.clear()
@@ -191,8 +195,13 @@ class Window(arcade.Window):
                 draw_trap(trap, col)
             """
 
-        arcade.draw_circle_filled(0, 0, 2, arcade.color.GREEN)
+        ox, oy = self.world_coord_to_window_coord(0, 0)
+
+        arcade.draw_circle_filled(ox, oy, 4, arcade.color.ORANGE)
         arcade.draw_circle_filled(x, y, 8, arcade.color.GREEN)
+
+        self.hud_camera.use()
+        arcade.draw_text(f'pos: ({px:.06}, {py:.06})', 10, 10, arcade.color.BLACK, 15, width=self.width, align="left")
 
     def on_mouse_press(self, x, y, button, modifiers):
         scale = self.camera.scale
