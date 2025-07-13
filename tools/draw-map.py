@@ -168,17 +168,28 @@ class Window(arcade.Window):
 
         self.elems.draw()
 
-        if self.selected_trap_id in self.lookup:
-            trap = self.lookup[self.selected_trap_id]
+        def draw_trap(trap, color):
             xtl = (trap.xtl + self.offset_x) * self.ratio_w
             xtr = (trap.xtr + self.offset_x) * self.ratio_w
             xbl = (trap.xbl + self.offset_x) * self.ratio_w
             xbr = (trap.xbr + self.offset_x) * self.ratio_w
             yt  = (trap.yt + self.offset_y) * self.ratio_h
             yb  = (trap.yb + self.offset_y) * self.ratio_h
+            arcade.draw_triangle_filled(xbl, yb, xtr, yt, xtl, yt, color)
+            arcade.draw_triangle_filled(xbl, yb, xtr, yt, xbr, yb, color)
 
-            arcade.draw_triangle_filled(xbl, yb, xtr, yt, xtl, yt, arcade.color.BLACK)
-            arcade.draw_triangle_filled(xbl, yb, xtr, yt, xbr, yb, arcade.color.BLACK)
+        if self.selected_trap_id in self.lookup:
+            trap = self.lookup[self.selected_trap_id]
+            draw_trap(trap, arcade.color.BLACK)
+
+            """
+            adjacent_colors = (arcade.color.RED, arcade.color.GREEN, arcade.color.BLUE, arcade.color.YELLOW)
+            for adj, col in zip(trap.adjacents, adjacent_colors):
+                if adj == -1:
+                    continue
+                trap = self.lookup[adj]
+                draw_trap(trap, col)
+            """
 
         arcade.draw_circle_filled(0, 0, 2, arcade.color.GREEN)
         arcade.draw_circle_filled(x, y, 8, arcade.color.GREEN)
@@ -254,6 +265,8 @@ if __name__ == '__main__':
     planes = []
     for idx in range(pathing_maps.len):
         zplane, = struct.unpack_from('<I', data, (idx * SIZE) + 0)
+        traps = []
+
         trap_len, trap_ptr = struct.unpack_from('<II', data, (idx * SIZE) + 0x14)
         traps_bytes, = proc.read(trap_ptr, f'{trap_len * 48}s')
         traps = []
@@ -265,22 +278,37 @@ if __name__ == '__main__':
             for adjacent in adjacents:
                 if adjacent != 0:
                     trap.adjacents.append(proc.read(adjacent)[0])
+                else:
+                    trap.adjacents.append(-1)
             traps.append(trap)
+        """
+        trap_len, trap_ptr = struct.unpack_from('<II', data, (idx * SIZE) + 0x34)
+        trap_ptrs = proc.read(trap_ptr, f'{trap_len}I')
+        for trap_ptr in trap_ptrs:
+            trap_id, *adjacents = proc.read(trap_ptr, '<IIIII')
+            xtl, xtr, yt, xbl, xbr, yb = proc.read(trap_ptr + 0x18, '<ffffff')
+            trap = Trapezoid(trap_id, xtl, xtr, yt, xbl, xbr, yb)
+            traps.append(trap)
+        """
 
         x_nodes = []
+        """
         x_node_count, x_node_ptr = struct.unpack_from('<II', data, (idx * SIZE) + 0x24)
         x_node_bytes, = proc.read(x_node_ptr, f'{x_node_count * 32}s')
         for jdx in range(x_node_count):
             x1, y1, x2, y2 = struct.unpack_from('<ffff', x_node_bytes, (jdx * 32) + 8)
             left, right = struct.unpack_from('<II', x_node_bytes, (jdx * 32) + 0x18)
             x_nodes.append((x1, y1, x1 + x2, y1 + y2))
+        """
 
         y_nodes = []
+        """
         y_node_count, y_node_ptr = struct.unpack_from('<II', data, (idx * SIZE) + 0x2C)
         y_node_bytes, = proc.read(y_node_ptr, f'{y_node_count * 24}s')
         for jdx in range(y_node_count):
             x, y, left, right = struct.unpack_from('<ffII', y_node_bytes, (jdx * 24) + 8)
             y_nodes.append((x, y))
+        """
 
         portal_count, portal_ptr = struct.unpack_from('<II', data, (idx * SIZE) + 0x3C)
         portals_size = portal_count * 0x14

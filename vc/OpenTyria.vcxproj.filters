@@ -79,6 +79,7 @@
     <ClInclude Include="..\code\GmColors.h" />
     <ClInclude Include="..\code\GmMath.h" />
     <ClInclude Include="..\code\GmText.h" />
+    <ClInclude Include="..\code\GmPaths.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\code\msgdefs.info" />

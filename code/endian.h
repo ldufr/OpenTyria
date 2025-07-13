@@ -49,42 +49,50 @@
 
 uint16_t be16dec(const void *pp)
 {
-    uint8_t const *p = (uint8_t const *)pp;
+    const uint8_t *p = (const uint8_t *)pp;
 
     return ((p[0] << 8) | p[1]);
 }
 
 uint32_t be32dec(const void *pp)
 {
-    uint8_t const *p = (uint8_t const *)pp;
+    const uint8_t *p = (const uint8_t *)pp;
 
     return (((unsigned)p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3]);
 }
 
 uint64_t be64dec(const void *pp)
 {
-    uint8_t const *p = (uint8_t const *)pp;
+    const uint8_t *p = (const uint8_t *)pp;
 
     return (((uint64_t)be32dec(p) << 32) | be32dec(p + 4));
 }
 
 uint16_t le16dec(const void *pp)
 {
-    uint8_t const *p = (uint8_t const *)pp;
+    const uint8_t *p = (const uint8_t *)pp;
 
     return ((p[1] << 8) | p[0]);
 }
 
 uint32_t le32dec(const void *pp)
 {
-    uint8_t const *p = (uint8_t const *)pp;
+    const uint8_t *p = (const uint8_t *)pp;
 
     return (((unsigned)p[3] << 24) | (p[2] << 16) | (p[1] << 8) | p[0]);
 }
 
+float le32decf(const void *pp)
+{
+    uint32_t num = le32dec(pp);
+    float res;
+    memcpy(&res, &num, sizeof(res));
+    return res;
+}
+
 uint64_t le64dec(const void *pp)
 {
-    uint8_t const *p = (uint8_t const *)pp;
+    const uint8_t *p = (const uint8_t *)pp;
 
     return (((uint64_t)le32dec(p + 4) << 32) | le32dec(p));
 }

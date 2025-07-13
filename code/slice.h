@@ -21,6 +21,14 @@ typedef slice(uint32_t)  slice_uint32_t;
 typedef slice(size_t)    slice_size_t;
 typedef slice(uintptr_t) slice_uintptr_t;
 
+#define slice_advance(slice, count) _slice_advance(&(slice)->base, count, sizeof(*(slice)->ptr))
+
+void _slice_advance(slice_void_t *slice, size_t count, size_t elem_size)
+{
+    slice->ptr = (const char *) slice->ptr + (count * elem_size);
+    slice->len -= count;
+}
+
 typedef struct slice_mut_void_t {
     size_t len;
     void  *ptr;

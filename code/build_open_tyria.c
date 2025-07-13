@@ -19,6 +19,7 @@
 #ifdef _WIN32
 # pragma warning(disable: 4201) // nonstandard extension used: nameless struct/union
 # pragma warning(disable: 4214) // nonstandard extension used: bit field types other than int
+# pragma warning(disable: 4204) // nonstandard extension used: non-constant aggregate initializer
 # pragma comment(lib, "Ws2_32.lib")
 # include <Windows.h>
 # include <Winsock2.h>
@@ -103,10 +104,10 @@
 #include "GameMsg.h"
 
 #include "GmChar.h"
-#include "GmMapData.h"
 #include "GmChat.h"
 #include "GmFriend.h"
 #include "GmMap.h"
+#include "GmPaths.h"
 #include "GmInventory.h"
 #include "GmPlayer.h"
 #include "GmAgent.h"
@@ -141,7 +142,6 @@
 #include "GmDefaultArmors.c"
 #include "GmInventory.c"
 #include "GmItem.c"
-#include "GmMapData.c"
 #include "GmPlayer.c"
 #include "GmParty.c"
 #include "GmTitleConstData.c"

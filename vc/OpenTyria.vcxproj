@@ -273,6 +273,7 @@
     <ClInclude Include="..\code\GmMaps.h" />
     <ClInclude Include="..\code\GmMath.h" />
     <ClInclude Include="..\code\GmParty.h" />
+    <ClInclude Include="..\code\GmPaths.h" />
     <ClInclude Include="..\code\GmPlayer.h" />
     <ClInclude Include="..\code\GmText.h" />
     <ClInclude Include="..\code\GmTitle.h" />
