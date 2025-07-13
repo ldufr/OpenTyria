@@ -84,7 +84,7 @@ void PathAddNode(
 
     // We may push the node multiple times to the priority queue, but only if the cost is smaller.
     // This means that we won't even pop the higher cost, which means we trade-off the size of the
-    // prioq with the bookeeping whenever the node move.
+    // prioq with the bookkeeping whenever the node move.
     PathPrioPush(&context->prioq, elem);
 }
 
