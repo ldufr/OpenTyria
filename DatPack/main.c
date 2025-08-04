@@ -163,8 +163,8 @@ int exec_subcommand_find(FileArchive *archive)
 
 #if 0
     WaypointArray waypoints = {0};
-    GmPos gmStartPos = (GmPos) { 2652.8135, 699.3217, 0 };
-    GmPos gmEndPos   = (GmPos) { 2792.3027, 1165.5057, 58 };
+    GmPos gmStartPos = (GmPos) { -5706.0845, 9395.6445, 0 };
+    GmPos gmEndPos   = (GmPos) { -7621.4482, 9156.0986, 0 };
 
     array_clear(&waypoints);
     if (!PathFinding(&context, gmStartPos, gmEndPos, &waypoints)) {

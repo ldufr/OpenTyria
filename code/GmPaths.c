@@ -1,22 +1,5 @@
 #pragma once
 
-PathTrapezoid* SearchTrapezoid(PathContext *context, Vec2f pos)
-{
-    PathTrapezoid* result = NULL;
-    ArrayPathPlane *planes = &context->static_data.planes;
-    GmPos pos2;
-    pos2.x = pos.x;
-    pos2.y = pos.y;
-    for (size_t idx = planes->len - 1; idx < planes->len; --idx) {
-        pos2.plane = (uint16_t) idx;
-        if ((result = FindTrapezoid(context, pos2)) != NULL)
-            break;
-    }
-
-    // printf("plane is %u\n", pos2.plane);
-    return result;
-}
-
 PathTrapezoid* FindTrapezoid(PathContext *context, GmPos pos)
 {
     ArrayPathPlane *planes = &context->static_data.planes;
@@ -165,20 +148,27 @@ float PathVec2fDist(Vec2f v1, Vec2f v2)
     return PathSqrt(dx * dx + dy * dy);
 }
 
+Vec2f PathVec2fUnit(Vec2f v)
+{
+    float tmp = Vec2fDot(v, v);
+    tmp = PathSqrt(tmp);
+    return Vec2fDiv(v, tmp);
+}
+
 void PathAddNode(
     PathContext *context,
-    PathNode *parent,
+    PathFindNode *parent,
     PathTrapezoid *trap,
     GmPos pos,
     float current_cost,
     float estimated_cost)
 {
-    PathNode *pathNode = &array_at(&context->nodes, trap->trap_id);
+    PathFindNode *pathNode = &array_at(&context->nodes, trap->trap_id);
     pathNode->closed = false;
     pathNode->cost_to_node = current_cost;
-    pathNode->pos = pos;
-    pathNode->trap = trap;
-    pathNode->parent = parent;
+    pathNode->point.pos = pos;
+    pathNode->point.trap = trap;
+    pathNode->next = parent;
 
     PathHeapNode elem;
     elem.cost = estimated_cost;
@@ -331,9 +321,9 @@ void FindPointOnNextTrap(float min_left_x, float max_right_x, float next_y, Vec2
     #endif
 }
 
-void PathVisitTrap(PathContext *context, PathNode *curr_node, Vec2f dst_pos, PathTrapezoid *neighbor, GmPos cross_pos, float max_cost)
+void PathVisitTrap(PathContext *context, PathFindNode *curr_node, Vec2f dst_pos, PathTrapezoid *neighbor, GmPos cross_pos, float max_cost)
 {
-    float dist_to_trap = PathVec2fDist(curr_node->pos.v2, cross_pos.v2);
+    float dist_to_trap = PathVec2fDist(curr_node->point.pos.v2, cross_pos.v2);
     float cost_to_trap = curr_node->cost_to_node + dist_to_trap;
 
     if (max_cost <= cost_to_trap) {
@@ -366,25 +356,25 @@ void PathVisitTrap(PathContext *context, PathNode *curr_node, Vec2f dst_pos, Pat
     PathAddNode(context, curr_node, neighbor, cross_pos, cost_to_trap, new_estimated_cost);
 }
 
-void PathVisitAbove(PathContext *context, PathNode *curr_node, Vec2f dst_pos, PathTrapezoid *neighbor, float max_cost)
+void PathVisitAbove(PathContext *context, PathFindNode *curr_node, Vec2f dst_pos, PathTrapezoid *neighbor, float max_cost)
 {
-    PathTrapezoid *trap = curr_node->trap;
+    PathTrapezoid *trap = curr_node->point.trap;
     float xl = fmaxf(neighbor->xbl, trap->xtl);
     float xr = fminf(neighbor->xbr, trap->xtr);
     GmPos cross_pos;
-    cross_pos.plane = curr_node->pos.plane;
-    FindPointOnNextTrap(xl, xr, neighbor->yb, curr_node->pos.v2, dst_pos, &cross_pos.v2);
+    cross_pos.plane = curr_node->point.pos.plane;
+    FindPointOnNextTrap(xl, xr, neighbor->yb, curr_node->point.pos.v2, dst_pos, &cross_pos.v2);
     PathVisitTrap(context, curr_node, dst_pos, neighbor, cross_pos, max_cost);
 }
 
-void PathVisitBellow(PathContext *context, PathNode *curr_node, Vec2f dst_pos, PathTrapezoid *neighbor, float max_cost)
+void PathVisitBellow(PathContext *context, PathFindNode *curr_node, Vec2f dst_pos, PathTrapezoid *neighbor, float max_cost)
 {
-    PathTrapezoid *trap = curr_node->trap;
+    PathTrapezoid *trap = curr_node->point.trap;
     float xl = fmaxf(neighbor->xtl, trap->xbl);
     float xr = fminf(neighbor->xtr, trap->xbr);
     GmPos cross_pos;
-    cross_pos.plane = curr_node->pos.plane;
-    FindPointOnNextTrap(xl, xr, neighbor->yt, curr_node->pos.v2, dst_pos, &cross_pos.v2);
+    cross_pos.plane = curr_node->point.pos.plane;
+    FindPointOnNextTrap(xl, xr, neighbor->yt, curr_node->point.pos.v2, dst_pos, &cross_pos.v2);
     PathVisitTrap(context, curr_node, dst_pos, neighbor, cross_pos, max_cost);
 }
 
@@ -435,9 +425,9 @@ void PickNextPoint(Vec2f point1, Vec2f point2, Vec2f cur_pos, Vec2f dst_pos, Vec
     }
 }
 
-void PathVisitPortalLeft(PathContext *context, PathNode *curr_node, Vec2f dst_pos, uint16_t portal_id, float max_cost)
+void PathVisitPortalLeft(PathContext *context, PathFindNode *curr_node, Vec2f dst_pos, uint16_t portal_id, float max_cost)
 {
-    ArrayPortal *portals = &array_at(&context->static_data.planes, curr_node->pos.plane).portals;
+    ArrayPortal *portals = &array_at(&context->static_data.planes, curr_node->point.pos.plane).portals;
     Portal *portal = &array_at(portals, portal_id);
 
     assert(portal->pair->portal_plane_id == portal->neighbor_plane_id);
@@ -456,34 +446,34 @@ void PathVisitPortalLeft(PathContext *context, PathNode *curr_node, Vec2f dst_po
     PathTrapezoid **traps = portal->pair->traps;
     for (size_t idx = 0; idx < portal->pair->traps_count; ++idx) {
         PathTrapezoid *portal_trap = traps[idx];
-        PathNode *node = &array_at(&context->nodes, portal_trap->trap_id);
+        PathFindNode *node = &array_at(&context->nodes, portal_trap->trap_id);
 
         // We can't visit this trapezoid again.
         if (node && node->closed)
             continue;
 
         Vec2f point1; // top point
-        if (portal_trap->yt <= curr_node->trap->yt) {
+        if (portal_trap->yt <= curr_node->point.trap->yt) {
             point1.x = portal_trap->xtr;
             point1.y = portal_trap->yt;
         } else {
-            point1.x = curr_node->trap->xtl;
-            point1.y = curr_node->trap->yt;
+            point1.x = curr_node->point.trap->xtl;
+            point1.y = curr_node->point.trap->yt;
         }
 
         Vec2f point2; // bottom point
-        if (curr_node->trap->yb <= portal_trap->yb) {
+        if (curr_node->point.trap->yb <= portal_trap->yb) {
             point2.x = portal_trap->xbr;
             point2.y = portal_trap->yb;
         } else {
-            point2.x = curr_node->trap->xbl;
-            point2.y = curr_node->trap->yb;
+            point2.x = curr_node->point.trap->xbl;
+            point2.y = curr_node->point.trap->yb;
         }
 
         if (point2.y <= point1.y) {
             GmPos crossing_pos;
             crossing_pos.plane = portal->pair->portal_plane_id;
-            PickNextPoint(point1, point2, curr_node->pos.v2, dst_pos, &crossing_pos.v2);
+            PickNextPoint(point1, point2, curr_node->point.pos.v2, dst_pos, &crossing_pos.v2);
             PathVisitTrap(context, curr_node, dst_pos, portal_trap, crossing_pos, max_cost);
         } else {
             // assert(!"shouldn't be possible");
@@ -491,9 +481,9 @@ void PathVisitPortalLeft(PathContext *context, PathNode *curr_node, Vec2f dst_po
     }
 }
 
-void PathVisitPortalRight(PathContext *context, PathNode *curr_node, Vec2f dst_pos, uint16_t portal_id, float max_cost)
+void PathVisitPortalRight(PathContext *context, PathFindNode *curr_node, Vec2f dst_pos, uint16_t portal_id, float max_cost)
 {
-    ArrayPortal *portals = &array_at(&context->static_data.planes, curr_node->pos.plane).portals;
+    ArrayPortal *portals = &array_at(&context->static_data.planes, curr_node->point.pos.plane).portals;
     Portal *portal = &array_at(portals, portal_id);
 
     assert(portal->pair->portal_plane_id == portal->neighbor_plane_id);
@@ -512,34 +502,34 @@ void PathVisitPortalRight(PathContext *context, PathNode *curr_node, Vec2f dst_p
     PathTrapezoid **traps = portal->pair->traps;
     for (size_t idx = 0; idx < portal->pair->traps_count; ++idx) {
         PathTrapezoid *portal_trap = traps[idx];
-        PathNode *node = &array_at(&context->nodes, portal_trap->trap_id);
+        PathFindNode *node = &array_at(&context->nodes, portal_trap->trap_id);
 
         // We can't visit this trapezoid again.
         if (node && node->closed)
             continue;
 
         Vec2f point1; // top point
-        if (portal_trap->yt <= curr_node->trap->yt) {
+        if (portal_trap->yt <= curr_node->point.trap->yt) {
             point1.x = portal_trap->xtl;
             point1.y = portal_trap->yt;
         } else {
-            point1.x = curr_node->trap->xtr;
-            point1.y = curr_node->trap->yt;
+            point1.x = curr_node->point.trap->xtr;
+            point1.y = curr_node->point.trap->yt;
         }
 
         Vec2f point2; // bottom point
-        if (curr_node->trap->yb <= portal_trap->yb) {
+        if (curr_node->point.trap->yb <= portal_trap->yb) {
             point2.x = portal_trap->xbl;
             point2.y = portal_trap->yb;
         } else {
-            point2.x = curr_node->trap->xbr;
-            point2.y = curr_node->trap->yb;
+            point2.x = curr_node->point.trap->xbr;
+            point2.y = curr_node->point.trap->yb;
         }
 
         if (point2.y <= point1.y) {
             GmPos crossing_pos;
             crossing_pos.plane = portal->pair->portal_plane_id;
-            PickNextPoint(point1, point2, curr_node->pos.v2, dst_pos, &crossing_pos.v2);
+            PickNextPoint(point1, point2, curr_node->point.pos.v2, dst_pos, &crossing_pos.v2);
             PathVisitTrap(context, curr_node, dst_pos, portal_trap, crossing_pos, max_cost);
         } else {
             // assert(!"shouldn't be possible");
@@ -547,16 +537,411 @@ void PathVisitPortalRight(PathContext *context, PathNode *curr_node, Vec2f dst_p
     }
 }
 
-PathNode *PathReversePathNode(PathNode *head)
+PathFindNode *PathReversePathFindNode(PathFindNode *head)
 {
-    PathNode *prev = NULL;
+    size_t count = 0;
+    PathFindNode *prev = NULL;
     while (head != NULL) {
-        PathNode *next = head->parent;
-        head->parent = prev;
+        PathFindNode *next = head->next;
+        head->next = prev;
         prev = head;
         head = next;
+        count++;
     }
     return prev;
+}
+
+typedef struct PathFindBound {
+    PathFindPoint point;
+    size_t        step_id;
+    Vec2f         vec;
+} PathFindBound;
+
+typedef struct PathBuildHelper {
+    PathContext *context;
+    PathFindBound left_bound;
+    PathFindBound right_bound;
+    PathFindPoint curr_start_point;
+    uint16_t current_plane;
+    GmPos last_pos;
+    PathFindPoint src_point;
+    PathFindPoint dst_point;
+    WaypointArray *waypoints;
+} PathBuildHelper;
+
+float PathVec2fPreciseCross(Vec2f v1, Vec2f v2)
+{
+    if (v1.x == 0.f && v1.y == 0.f)
+        return 0.f;
+    if (v2.x == 0.f && v2.y == 0.f)
+        return 0.f;
+
+    float cross_prod = Vec2fCross(v1, v2);
+    if (-0.01f < cross_prod && cross_prod < 0.01f)
+        return 0.f;
+
+    if (cross_prod <= -1.f || 1.f <= cross_prod)
+        return cross_prod;
+
+    Vec2f v1_unit = PathVec2fUnit(v1);
+    Vec2f v2_unit = PathVec2fUnit(v2);
+
+    cross_prod = Vec2fCross(v1_unit, v2_unit);
+    if (cross_prod <= -0.01f || 0.01f <= cross_prod)
+        return cross_prod;
+    
+    return 0.f;
+}
+
+void PathBuildAddWaypointAndReduce(PathBuildHelper *helper, PathFindPoint new_point, Vec2f from_pos)
+{
+#if 0
+    printf(
+        "path_build_add_waypoint_and_reduce: new: %.4f, %.4f, %u, trap: %u, from: %.4f, %.4f\n",
+        new_point.pos.x, new_point.pos.y, new_point.pos.plane,
+        new_point.trap->trap_id,
+        from_pos.x, from_pos.y
+    );
+#endif
+
+    PathBuildStepArray *steps = &helper->context->steps;
+    WaypointArray *waypoints = helper->waypoints;
+
+    for (size_t idx = 0; idx < steps->len; ++idx) {
+        PathBuildStep step = steps->ptr[idx];
+
+        Vec2f best_pos;
+        if (!Vec2fIsZero(step.dir)) {
+            float t, s;
+
+            Vec2f to_point = Vec2fSub(new_point.pos.v2, from_pos);
+            FindIntersectionPoint(step.pos, step.dir, from_pos, to_point, &t, &s);
+
+            if ( -0.01f <= t ) {
+                best_pos = step.pos;
+            } else if (1.01 < t) {
+                best_pos = Vec2fAdd(step.pos, step.dir);
+            } else {
+                best_pos.x = step.pos.x + (t * step.dir.x);
+                best_pos.y = step.pos.y + (t * step.dir.y);
+            }
+        } else {
+            best_pos = step.pos;
+        }
+
+        if (!Vec2fEqual(helper->last_pos.v2, best_pos) || helper->last_pos.plane != step.plane) {
+            helper->last_pos.v2 = best_pos;
+            helper->last_pos.plane = step.plane;
+
+            if (waypoints->len != 0) {
+                Waypoint *prev_wp = &waypoints->ptr[waypoints->len - 1];
+                if (Vec2fEqual(best_pos, prev_wp->pos.v2)) {
+                    --waypoints->len;
+                }
+            }
+
+            Waypoint *wp = array_push(helper->waypoints, 1);
+            wp->pos.v2 = best_pos;
+            wp->pos.plane = step.plane;
+            wp->trap_id = step.next_trap->trap_id;
+        }
+    }
+
+    array_clear(steps);
+    if (!Vec2fEqual(helper->last_pos.v2, new_point.pos.v2)) {
+        helper->last_pos = new_point.pos;
+
+        if (waypoints->len != 0) {
+            Waypoint *prev_wp = &waypoints->ptr[waypoints->len - 1];
+            if (Vec2fEqual(new_point.pos.v2, prev_wp->pos.v2)) {
+                --waypoints->len;
+            }
+        }
+
+        Waypoint *wp = array_push(helper->waypoints, 1);
+        wp->pos = new_point.pos;
+        wp->trap_id = new_point.trap->trap_id;
+    }
+}
+
+void PathBuildAddWaypoint(PathBuildHelper *helper, Vec2f left, Vec2f right, PathFindNode **node)
+{
+#if 0
+    printf(
+        "path_build_add_waypoint: left: %.4f, %.4f, right: %.4f, %.4f, current_trap_id: %u\n",
+        left.x, left.y,
+        right.x, right.y,
+        (*node)->point.trap->trap_id
+    );
+#endif
+
+    PathFindBound *bound_used;
+    if (Vec2fEqual(helper->left_bound.point.pos.v2, left)) {
+        bound_used = &helper->left_bound;
+        helper->right_bound.point = helper->left_bound.point;
+        helper->right_bound.step_id = helper->left_bound.step_id;
+        *node = &array_at(&helper->context->nodes, helper->left_bound.point.trap->trap_id);
+    } else if (Vec2fEqual(helper->right_bound.point.pos.v2, right)) {
+        bound_used = &helper->right_bound;
+        helper->left_bound.point = helper->right_bound.point;
+        helper->left_bound.step_id = helper->right_bound.step_id;
+        *node = &array_at(&helper->context->nodes, helper->right_bound.point.trap->trap_id);
+    } else {
+        float dx = left.x - helper->curr_start_point.pos.v2.x;
+        float dy = left.y - helper->curr_start_point.pos.v2.y;
+        float lval = dy * dy + dx * dx;
+
+        dx = right.x - helper->curr_start_point.pos.v2.x;
+        dy = right.y - helper->curr_start_point.pos.v2.y;
+        float rval = dy * dy + dx * dx;
+
+        if (lval < rval)
+          bound_used = &helper->left_bound;
+        else
+          bound_used = &helper->right_bound;
+    }
+
+    array_resize(&helper->context->steps, bound_used->step_id);
+
+    PathBuildAddWaypointAndReduce(helper, bound_used->point, helper->curr_start_point.pos.v2);
+    helper->curr_start_point = bound_used->point;
+    helper->right_bound.vec.x = 0.0;
+    helper->right_bound.vec.y = 0.0;
+    helper->left_bound.vec.y = 0.0;
+    helper->left_bound.vec.x = 0.0;
+    helper->current_plane = bound_used->point.pos.plane;
+}
+
+void PathBuildProcessNext(PathBuildHelper *helper, Vec2f left, Vec2f right, PathTrapezoid *next_trap, PathFindNode **node)
+{
+    Vec2f to_left = Vec2fSub(left, helper->curr_start_point.pos.v2);
+    Vec2f to_right = Vec2fSub(right, helper->curr_start_point.pos.v2);
+
+#if 0
+    printf(
+        "path_build_process_next: left: %.4f, %.4f, right: %.4f, %.4f, current_trap_id: %u, next_trap_id: %u\n",
+        left.x, left.y,
+        right.x, right.y,
+        (*node)->point.trap->trap_id,
+        next_trap->trap_id
+    );
+#endif
+
+    PathFindBound new_left_bound;
+    if (PathVec2fPreciseCross(to_left, helper->left_bound.vec) < 0.f) {
+        // to_left is to the left of the left_bound, so we keep the left bound
+        to_left = helper->left_bound.vec;
+        new_left_bound = helper->left_bound;
+    } else {
+        new_left_bound.vec = to_left;
+        new_left_bound.point.pos.v2 = left;
+        new_left_bound.point.pos.plane = helper->current_plane;
+        new_left_bound.point.trap = next_trap;
+        new_left_bound.step_id = helper->context->steps.len;
+    }
+
+    PathFindBound new_right_bound;
+    if (0.f < PathVec2fPreciseCross(to_right, helper->right_bound.vec)) {
+        // to_right is to the right of the right_bound, so we keep the right bound
+        to_right = helper->right_bound.vec;
+        new_right_bound = helper->right_bound;
+    } else {
+        new_right_bound.vec = to_right;
+        new_right_bound.point.pos.v2 = right;
+        new_right_bound.point.pos.plane = helper->current_plane;
+        new_right_bound.point.trap = next_trap;
+        new_right_bound.step_id = helper->context->steps.len;
+    }
+
+    if (Vec2fIsZero(helper->left_bound.vec) || PathVec2fPreciseCross(to_left, to_right) <= 0.f) {
+        helper->left_bound = new_left_bound;
+        helper->right_bound = new_right_bound;
+        *node = (*node)->next;
+    } else {
+        Vec2f ltmp = new_left_bound.point.pos.v2;
+        Vec2f rtmp = new_right_bound.point.pos.v2;
+        PathBuildAddWaypoint(helper, ltmp, rtmp, node);
+    }
+}
+
+bool PathAddLast(PathBuildHelper *helper, PathFindNode **node, PathFindPoint new_point)
+{
+#if 0
+    printf(
+        "path_add_last: current_trap_id: %u, dst: %.4f, %.4f, %u\n",
+        (*node)->point.trap->trap_id,
+        new_point.pos.x, new_point.pos.y, new_point.pos.plane
+    );
+#endif
+
+    Vec2f to_new_point = Vec2fSub(new_point.pos.v2, helper->curr_start_point.pos.v2);
+
+    if (0 <= PathVec2fPreciseCross(to_new_point, helper->left_bound.vec)) {
+        if (PathVec2fPreciseCross(to_new_point, helper->right_bound.vec) <= 0) {
+            // [left, to_new_point, right]
+            PathBuildAddWaypointAndReduce(helper, new_point, helper->curr_start_point.pos.v2);
+            return true;
+        } else {
+            // [left, right, to_new_point]
+            helper->right_bound.vec.x = 0.0;
+            helper->right_bound.vec.y = 0.f;
+            helper->left_bound.point = helper->right_bound.point;
+
+            *node = &array_at(&helper->context->nodes, helper->right_bound.point.trap->trap_id);
+            array_resize(&helper->context->steps, helper->right_bound.step_id);
+
+            PathBuildAddWaypointAndReduce(helper, helper->right_bound.point, helper->curr_start_point.pos.v2);
+            helper->curr_start_point = helper->right_bound.point;
+            helper->current_plane = helper->right_bound.point.pos.plane;
+            return false;
+        }
+    } else {
+        // [to_new_point, left, right]
+        helper->left_bound.vec.x = 0.0;
+        helper->left_bound.vec.y = 0.f;
+        helper->right_bound.point = helper->left_bound.point;
+
+        *node = &array_at(&helper->context->nodes, helper->left_bound.point.trap->trap_id);
+        array_resize(&helper->context->steps, helper->left_bound.step_id);
+
+        PathBuildAddWaypointAndReduce(helper, helper->left_bound.point, helper->curr_start_point.pos.v2);
+        helper->curr_start_point = helper->left_bound.point;
+        helper->current_plane = helper->left_bound.point.pos.plane;
+        return false;
+    }
+}
+
+bool GetPortalAndCheckTrapAdjacent(PathBuildHelper *helper, uint32_t portal_id, PathTrapezoid *trap, struct Portal **result)
+{
+    if (portal_id == 0xFFFF)
+        return false;
+
+    PathPlane *plane = &array_at(&helper->context->static_data.planes, helper->current_plane);
+    Portal *portal = &array_at(&plane->portals, portal_id);
+    Portal *pair = portal->pair;
+
+    for (uint32_t idx = 0; idx < pair->traps_count; ++idx) {
+        if (pair->traps[idx] == trap) {
+            *result = portal;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void PathCreateWaypoints(
+    PathContext *context,
+    PathFindPoint src_point, PathFindPoint dst_point,
+    WaypointArray *waypoints)
+{
+    const int MAX_LOOP = 0xBB8;
+
+    PathBuildHelper helper = {0};
+    helper.context = context;
+    helper.left_bound.point = src_point;
+    helper.right_bound.point = src_point;
+    helper.curr_start_point = src_point;
+    helper.current_plane = src_point.pos.plane;
+    helper.src_point = src_point;
+    helper.dst_point = dst_point;
+    helper.waypoints = waypoints;
+
+    array_clear(&context->steps);
+    PathFindNode *curr_node = &array_at(&context->nodes, src_point.trap->trap_id);
+
+    for (int loop = 0; ; ++loop) {
+        assert(loop < MAX_LOOP);
+
+        Portal *portal;
+
+        PathTrapezoid *curr_trap = curr_node->point.trap;
+        PathFindNode *next_node = curr_node->next;
+
+        if (!next_node || curr_trap == dst_point.trap) {
+            if (PathAddLast(&helper, &curr_node, dst_point))
+                break;
+            continue;
+        }
+
+        PathTrapezoid *next_trap = curr_node->next->point.trap;
+        if (next_trap == curr_trap->top_left || next_trap == curr_trap->top_right) {
+            Vec2f left, right;
+            left.x = fmaxf(curr_trap->xtl, next_trap->xbl);
+            left.y = curr_trap->yt;
+            right.x = fminf(curr_trap->xtr, next_trap->xbr);
+            right.y = curr_trap->yt;
+            PathBuildProcessNext(&helper, left, right, next_trap, &curr_node);
+        } else if (next_trap == curr_trap->bottom_left || next_trap == curr_trap->bottom_right) {
+            Vec2f left, right;
+            left.x = fmaxf(curr_trap->xbl, next_trap->xtl);
+            left.y = curr_trap->yb;
+            right.x = fminf(curr_trap->xbr, next_trap->xtr);
+            right.y = curr_trap->yb;
+            PathBuildProcessNext(&helper, right, left, next_trap, &curr_node);
+        } else if (GetPortalAndCheckTrapAdjacent(&helper, curr_trap->portal_right, next_trap, &portal)) {
+            Vec2f top;
+            if (next_trap->yt <= curr_trap->yt) {
+                top.x = next_trap->xtl;
+                top.y = next_trap->yt;
+            } else {
+                top.x = curr_trap->xtr;
+                top.y = curr_trap->yt;
+            }
+
+            Vec2f bottom;
+            if (curr_trap->yb <= next_trap->yb) {
+                bottom.x = next_trap->xbl;
+                bottom.y = next_trap->yb;
+            } else {
+                bottom.x = curr_trap->xbr;
+                bottom.y = curr_trap->yb;
+            }
+
+            helper.current_plane = portal->neighbor_plane_id;
+
+            PathBuildStep *step = array_push(&context->steps, 1);
+            step->pos.x = top.x;
+            step->pos.y = top.y;
+            step->dir.x = bottom.x - top.x;
+            step->dir.y = bottom.y - top.y;
+            step->plane = helper.current_plane;
+            step->next_trap = next_trap;
+            PathBuildProcessNext(&helper, top, bottom, next_trap, &curr_node);
+        }  else if (GetPortalAndCheckTrapAdjacent(&helper, curr_trap->portal_left, next_trap, &portal)) {
+            Vec2f top;
+            if (next_trap->yt <= curr_trap->yt) {
+                top.x = next_trap->xtr;
+                top.y = next_trap->yt;
+            } else {
+                top.x = curr_trap->xtl;
+                top.y = curr_trap->yt;
+            }
+
+            Vec2f bottom;
+            if (curr_trap->yb <= next_trap->yb) {
+                bottom.x = next_trap->xbr;
+                bottom.y = next_trap->yb;
+            } else {
+                bottom.x = curr_trap->xbl;
+                bottom.y = curr_trap->yb;
+            }
+
+            helper.current_plane = portal->neighbor_plane_id;
+
+            PathBuildStep *step = array_push(&context->steps, 1);
+            step->pos.x = top.x;
+            step->pos.y = top.y;
+            step->dir.x = bottom.x - top.x;
+            step->dir.y = bottom.y - top.y;
+            step->plane = helper.current_plane;
+            step->next_trap = next_trap;
+            PathBuildProcessNext(&helper, bottom, top, next_trap, &curr_node);
+        } else {
+            assert(!"Shouldn't be possible");
+            break;
+        }
+    }
 }
 
 bool PathFinding(PathContext *context, GmPos src_pos, GmPos dst_pos, WaypointArray *waypoints)
@@ -586,20 +971,31 @@ bool PathFinding(PathContext *context, GmPos src_pos, GmPos dst_pos, WaypointArr
     PathHeapNode top;
     while (PathHeapPop(&context->prioq, &top)) {
         assert(top.trap_id < context->nodes.len);
-        PathNode *curr_node = &array_at(&context->nodes, top.trap_id);
+        PathFindNode *curr_node = &array_at(&context->nodes, top.trap_id);
         curr_node->closed = true;
 
-        PathTrapezoid *curr_trap = curr_node->trap;
+        PathTrapezoid *curr_trap = curr_node->point.trap;
         if (curr_trap == dst_trap) {
-            PathNode *it = PathReversePathNode(curr_node);
-            while (it != NULL) {
-                Waypoint *waypoint = array_push(waypoints, 1);
-                waypoint->pos = it->pos;
-                waypoint->trap_id = it->trap->trap_id;
-                it = it->parent;
-            }
+            (void) PathReversePathFindNode(curr_node);
 
-            // finish building
+            PathFindPoint src_point = {
+                .pos = src_pos,
+                .trap = src_trap,
+            };
+
+            PathFindPoint dst_point = {
+                .pos = dst_pos,
+                .trap = dst_trap,
+            };
+
+            #if 0
+            while (it != NULL) {
+                printf("Node %.4f, %.4f, %d\n", it->point.pos.x, it->point.pos.y, it->point.pos.plane);
+                it = it->next;
+            }
+            #endif
+
+            PathCreateWaypoints(context, src_point, dst_point, waypoints);
             return true;
         }
 
@@ -607,30 +1003,31 @@ bool PathFinding(PathContext *context, GmPos src_pos, GmPos dst_pos, WaypointArr
         // float cur_dist = DistToTrap(dst_pos, curr_node->trap);
         // if (cur_dist < best_dist) {
         //     best_dist = cur_dist;
+
         //     dstSegment.trap = curr_node->trap;
         // }
 
         if (curr_trap->top_left) {
             // @Cleanup: Add array_get with assert.
-            PathNode *node = &array_at(&context->nodes, curr_trap->top_left->trap_id);
+            PathFindNode *node = &array_at(&context->nodes, curr_trap->top_left->trap_id);
             if (!node || !node->closed)
                 PathVisitAbove(context, curr_node, dst_pos.v2, curr_trap->top_left, MAX_COST);
         }
 
         if (curr_trap->top_right) {
-            PathNode *node = &array_at(&context->nodes, curr_trap->top_right->trap_id);
+            PathFindNode *node = &array_at(&context->nodes, curr_trap->top_right->trap_id);
             if (!node || !node->closed)
                 PathVisitAbove(context, curr_node, dst_pos.v2, curr_trap->top_right, MAX_COST);
         }
 
         if (curr_trap->bottom_left) {
-            PathNode *node = &array_at(&context->nodes, curr_trap->bottom_left->trap_id);
+            PathFindNode *node = &array_at(&context->nodes, curr_trap->bottom_left->trap_id);
             if (!node || !node->closed)
                 PathVisitBellow(context, curr_node, dst_pos.v2, curr_trap->bottom_left, MAX_COST);
         }
 
         if (curr_trap->bottom_right) {
-            PathNode *node = &array_at(&context->nodes, curr_trap->bottom_right->trap_id);
+            PathFindNode *node = &array_at(&context->nodes, curr_trap->bottom_right->trap_id);
             if (!node || !node->closed)
                 PathVisitBellow(context, curr_node, dst_pos.v2, curr_trap->bottom_right, MAX_COST);
         }

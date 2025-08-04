@@ -33,6 +33,10 @@ class pygw(object):
     def get_map_ctx(self):
         return self.proc.read(self.get_game_ctx() + 0x14)[0]
 
+    def get_path_ctx(self):
+        tmp = self.get_map_ctx()
+        return self.proc.read(tmp + 0x74)[0]
+
     def get_char_ctx(self):
         return self.proc.read(self.get_game_ctx() + 0x44)[0]
 

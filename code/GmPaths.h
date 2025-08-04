@@ -90,20 +90,33 @@ typedef struct PathStaticData {
     uint32_t       traps_count;
 } PathStaticData;
 
-typedef struct PathNode PathNode;
-struct PathNode {
-    bool      closed;
-    float     cost_to_node;
-    GmPos     pos;
+typedef struct PathFindPoint {
+    GmPos pos;
     PathTrapezoid *trap;
-    PathNode *parent;
+} PathFindPoint;
+
+typedef struct PathFindNode PathFindNode;
+struct PathFindNode {
+    bool          closed;
+    float         cost_to_node;
+    PathFindPoint point;
+    PathFindNode *next;
 };
-typedef array(PathNode) PathNodeArray;
+typedef array(PathFindNode) PathFindNodeArray;
+
+typedef struct PathBuildStep {
+    Vec2f pos;
+    Vec2f dir;
+    uint16_t plane;
+    PathTrapezoid *next_trap;
+} PathBuildStep;
+typedef array(PathBuildStep) PathBuildStepArray;
 
 typedef struct PathContext {
-    PathStaticData static_data;
-    PathNodeArray  nodes;
-    PathHeapArray  prioq;
+    PathStaticData     static_data;
+    PathFindNodeArray  nodes;
+    PathHeapArray      prioq;
+    PathBuildStepArray steps;
 } PathContext;
 
 typedef struct Waypoint {
