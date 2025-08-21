@@ -969,8 +969,7 @@ bool PathFinding(GmPathContext *context, GmPos src_pos, GmPos dst_pos, WaypointA
     }
 
     if (closest_point.trap && IsPointInTrap(dst_pos, closest_point.trap)) {
-        closest_point.pos = dst_pos;
-        PathFindNode *closest_node = &array_at(&context->nodes, closest_point.trap->trap_id);
+        closest_point.pos = dst_pos;        PathFindNode *closest_node = &array_at(&context->nodes, closest_point.trap->trap_id);
         (void) PathReversePathFindNode(closest_node);
 
         PathFindPoint src_point = {

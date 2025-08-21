@@ -2,6 +2,8 @@
 
 #define AUTH_CMSG_VERSION_HEADER 0xC0400
 #define GAME_CMSG_VERSION_HEADER 0xC0500
+#define CTRL_CMSG_VERSION_HEADER 0xC0FFF
+
 #define CMSG_CLIENT_SEED_HEADER  0x4200
 #define SMSG_SERVER_SEED_HEADER  0x1601
 
@@ -18,6 +20,7 @@ typedef enum ConnType {
     ConnType_None,
     ConnType_Auth,
     ConnType_Game,
+    ConnType_Ctrl,
 } ConnType;
 
 typedef struct Connection {
@@ -34,6 +37,7 @@ typedef struct Connection {
     {
         AUTH_CMSG_VERSION auth_version;
         GAME_CMSG_VERSION game_version;
+        CTRL_CMSG_VERSION ctrl_version;
     };
 } Connection;
 
@@ -73,6 +77,7 @@ typedef enum IoObjectType {
     IoObjectType_Listener,
     IoObjectType_Connection,
     IoObjectType_AuthConnection,
+    IoObjectType_CtrlConnection,
 } IoObjectType;
 
 typedef struct IoObject {
@@ -82,6 +87,7 @@ typedef struct IoObject {
         IoSource       listener;
         Connection     connection;
         AuthConnection auth_connection;
+        CtrlConn       ctrl_connection;
     };
 } IoObject;
 
@@ -97,6 +103,12 @@ typedef struct ConnectedAccountInfo {
     uintptr_t   auth_conn_token;
 } ConnectedAccountInfo;
 
+typedef struct GameSrvMeta {
+    uintptr_t ctrl_conn;
+    bool      ready;
+    
+} GameSrvMeta;
+
 typedef struct AuthSrv {
     Iocp                     iocp;
     uintptr_t                last_token_issued;
@@ -108,6 +120,7 @@ typedef struct AuthSrv {
     Database                 database;
     GameSrvArray             game_servers;
     ConnectedAccountInfo    *connected_accounts;
+    SocketAddr               internal_address;
 } AuthSrv;
 
 int  AuthSrv_Setup(AuthSrv *srv);

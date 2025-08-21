@@ -55,6 +55,17 @@ int main(int argc, char **argv)
         }
     }
 
+    const char addr[] = "127.0.0.1:1337";
+    if (AuthSrv_Bind(&server, addr, sizeof(addr) - 1) != ERR_OK) {
+        log_error("Failed to bind the internal address '%s'", addr);
+        return 1;
+    }
+
+    if (!parse_addr(&server.internal_address, addr, sizeof(addr) - 1)) {
+        log_error("Failed to parse the internal address '%s'", addr);
+        return 1;
+    }
+
     while (keep_running) {
         AuthSrv_Update(&server);
     }

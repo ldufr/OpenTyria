@@ -128,6 +128,8 @@
 #include "msgpack.h"
 #include "proto.h"
 
+#include "CtrlProto.h"
+#include "CtrlConn.h"
 #include "GameSrv.h"
 
 #include "AuthMsg.h"
@@ -138,8 +140,11 @@
 #endif
 
 #include "array.c"
+#include "AuthSrvCtrl.c"
 #include "AuthSrv.c"
 #include "Db.c"
+#include "CtrlConn.c"
+#include "CtrlProto.c"
 #include "FaArchive.c"
 #include "FaCompress.c"
 #include "GameSrv.c"

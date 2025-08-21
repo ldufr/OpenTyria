@@ -36,6 +36,9 @@
     <ClCompile Include="..\code\FaCompress.c" />
     <ClCompile Include="..\code\GmMapsConfig.c" />
     <ClCompile Include="..\code\GmMapDataImport.c" />
+    <ClCompile Include="..\code\CtrlConn.c" />
+    <ClCompile Include="..\code\CtrlProto.c" />
+    <ClCompile Include="..\code\AuthSrvCtrl.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\code\array.h" />
@@ -91,6 +94,8 @@
     <ClInclude Include="..\code\FaCompress.h" />
     <ClInclude Include="..\code\GmMapsConfig.h" />
     <ClInclude Include="..\code\GmMapDataImport.h" />
+    <ClInclude Include="..\code\CtrlConn.h" />
+    <ClInclude Include="..\code\CtrlProto.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\code\msgdefs.info" />

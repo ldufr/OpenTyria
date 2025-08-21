@@ -156,6 +156,19 @@ int Connection_ReadVersion(AuthSrv *srv, Connection *conn)
         conn->type = ConnType_Game;
         conn->game_version = version;
         return ERR_OK;
+    } else if (header == CTRL_CMSG_VERSION_HEADER) {
+        if (size < sizeof(CTRL_CMSG_VERSION)) {
+            return ERR_WOULDBLOCK;
+        }
+
+        CTRL_CMSG_VERSION version;
+        version.header = header;
+
+        Connection_RemoveIncoming(conn, consumed);
+        conn->state = ConnState_AwaitDone;
+        conn->type = ConnType_Ctrl;
+        conn->ctrl_version = version;
+        return ERR_OK;
     } else {
         return ERR_BAD_USER_DATA;
     }
@@ -398,6 +411,11 @@ void AuthSrv_FreeAuthConnectionByToken(AuthSrv *srv, uintptr_t token)
         array_clear(&object->auth_connection.outgoing);
         array_add(&srv->objects_to_remove, token);
         break;
+    case IoObjectType_CtrlConnection:
+        IoSource_reset(&object->ctrl_connection.source);
+        array_clear(&object->ctrl_connection.outgoing);
+        array_add(&srv->objects_to_remove, token);
+        break;
     default:
         abort();
     }
@@ -418,6 +436,13 @@ void AuthSrv_CloseAuthConnection(AuthSrv *srv, AuthConnection *conn)
     if (connected->map_token == 0) {
         AuthSrv_DelConnectedAccount(srv, conn->account_id);
     }
+}
+
+void AuthSrv_CloseCtrlConnection(AuthSrv *srv, CtrlConn *conn)
+{
+    IoSource_reset(&conn->source);
+    array_clear(&conn->outgoing);
+    array_add(&srv->objects_to_remove, conn->token);
 }
 
 void AuthSrv_GetMessages(AuthSrv *srv, AuthConnection *conn)
@@ -743,6 +768,7 @@ int AuthSrv_AllocGameServer(AuthSrv *srv, RequestGameInstanceParams params, size
     gm->language = params.language;
     gm->district_number = params.district_number;
     gm->map_type = params.map_type;
+    gm->ctrl_conn.peer_addr = srv->internal_address;
 
     if ((err = GameSrv_Start(gm)) != 0) {
         log_error("Failed to start a game server");
@@ -980,7 +1006,7 @@ void AuthSrv_DoPostHandshake(AuthSrv *srv, Connection *conn)
 {
     int err;
     if (conn->type == ConnType_Auth) {
-        IoObject obj = {.type = IoObjectType_AuthConnection};
+        IoObject obj = { .type = IoObjectType_AuthConnection };
         AuthConnection *dst = &obj.auth_connection;
 
         dst->token = conn->token;
@@ -1041,6 +1067,30 @@ void AuthSrv_DoPostHandshake(AuthSrv *srv, Connection *conn)
         GameSrv_SendAdminMsg(gm, &msg);
 
         stbds_hmdel(srv->objects, token);
+    } else if (conn->type == ConnType_Ctrl) {
+        IoObject obj = { .type = IoObjectType_CtrlConnection };
+        CtrlConn *dst = &obj.ctrl_connection;
+
+        dst->token = conn->token;
+        dst->source = conn->source;
+        dst->peer_addr = conn->peer_addr;
+
+        if (conn->n_incoming != 0) {
+            uint8_t *buffer;
+            if ((buffer = array_push(&dst->incoming, conn->n_incoming)) == NULL) {
+                log_error("out of memory");
+                abort();
+            }
+
+            memcpy(buffer, conn->incoming, conn->n_incoming);
+            if ((err = CtrlConn_GetMessages(dst)) != 0) {
+                log_error("CtrlConn_GetMessages failed, err: %d", err);
+                abort();
+            }
+        }
+
+        log_info("Accepted Ctrl connection %04" PRIXPTR, dst->token);
+        stbds_hmput(srv->objects, dst->token, obj);
     } else {
         abort();
     }
@@ -1228,6 +1278,40 @@ void AuthSrv_ProcessAuthConnectionEvent(AuthSrv *srv, AuthConnection *conn, Even
     array_clear(&conn->messages);
 }
 
+void AuthSrv_ProcessCtrlConnectionEvent(AuthSrv *srv, CtrlConn *conn, Event event)
+{
+    int err;
+
+    if ((err = CtrlConn_ProcessEvent(conn, event)) != 0) {
+        log_error("CtrlConn_ProcessEvent failed, err: %d", err);
+    }
+
+    for (size_t idx = 0; idx < conn->messages.len; ++idx) {
+        CtrlMsg *msg = conn->messages.ptr[idx];
+
+        if (msg == NULL) {
+            array_add(&srv->objects_to_remove, conn->token);
+            break;
+        }
+
+        err = ERR_OK;
+        switch (msg->msg_id) {
+        case CtrlMsgId_ServerReady:
+            err = AuthSrvCtrl_ProcessServerReady(srv, msg);
+            break;
+        case CtrlMsgId_PlayerLeaved:
+            break;
+        default:
+            err = ERR_UNSUCCESSFUL;
+            log_error(
+                "Unhandled Ctrl packet with header %" PRIu16 " (0x%" PRIX16 ")",
+                msg->msg_id,
+                msg->msg_id
+            );
+        }
+    }
+}
+
 void AuthSrv_ProcessEvent(AuthSrv *srv, Event event)
 {
     IoObject *obj;
@@ -1245,6 +1329,9 @@ void AuthSrv_ProcessEvent(AuthSrv *srv, Event event)
         break;
     case IoObjectType_AuthConnection:
         AuthSrv_ProcessAuthConnectionEvent(srv, &obj->auth_connection, event);
+        break;
+    case IoObjectType_CtrlConnection:
+        AuthSrv_ProcessCtrlConnectionEvent(srv, &obj->ctrl_connection, event);
         break;
     default:
         abort();
@@ -1280,17 +1367,25 @@ void AuthSrv_Update(AuthSrv *srv)
     size_t n_objects = stbds_hmlen(srv->objects);
     for (size_t idx = 0; idx < n_objects; ++idx) {
         IoObject *obj = &srv->objects[idx].value;
-        if (obj->type != IoObjectType_AuthConnection) {
-            continue;
-        }
-
-        AuthConnection *conn = &obj->auth_connection;
-        if (array_empty(&conn->outgoing)) {
-            continue;
-        }
-
-        if ((err = AuthConnection_FlushOutgoingBuffer(conn)) != 0) {
-            AuthSrv_CloseAuthConnection(srv, conn);
+        switch (obj->type) {
+        case IoObjectType_AuthConnection:
+            if (array_empty(&obj->auth_connection.outgoing)) {
+                break;
+            }
+            if ((err = AuthConnection_FlushOutgoingBuffer(&obj->auth_connection)) != 0) {
+                AuthSrv_CloseAuthConnection(srv, &obj->auth_connection);
+            }
+            break;
+        case IoObjectType_CtrlConnection:
+            if (array_empty(&obj->ctrl_connection.outgoing)) {
+                break;
+            }
+            if ((err = CtrlConn_FlushOutgoingBuffer(&obj->ctrl_connection)) != 0) {
+                // CtrlConn_CloseConnection(srv, &obj->ctrl_connection);
+            }
+            break;
+        default:
+            break;
         }
     }
 
@@ -1328,6 +1423,14 @@ void AuthSrv_Update(AuthSrv *srv)
                 flags |= IOCPF_WRITE;
             }
             if ((err = iocp_reregister(&srv->iocp, &obj->auth_connection.source, flags)) != 0) {
+                log_error("Couldn't re-register connection %04" PRIXPTR ", err: %d", token, err);
+            }
+            break;
+        case IoObjectType_CtrlConnection:
+            if (!obj->ctrl_connection.writable) {
+                flags |= IOCPF_WRITE;
+            }
+            if ((err = iocp_reregister(&srv->iocp, &obj->ctrl_connection.source, flags)) != 0) {
                 log_error("Couldn't re-register connection %04" PRIXPTR ", err: %d", token, err);
             }
             break;

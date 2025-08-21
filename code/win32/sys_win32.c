@@ -72,6 +72,15 @@ int sys_enable_nonblocking(uintptr_t fd, bool enable)
     }
 }
 
+int sys_connect(uintptr_t fd, const struct sockaddr *addr, int namelen)
+{
+    if (connect(fd, addr, namelen) != SOCKET_ERROR) {
+        return 0;
+    } else {
+        return WSAGetLastError();
+    }
+}
+
 int sys_bind(uintptr_t fd, const struct sockaddr *addr, int namelen)
 {
     if (bind(fd, addr, namelen) != SOCKET_ERROR) {

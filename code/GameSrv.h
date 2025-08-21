@@ -67,6 +67,7 @@ typedef struct GameSrv {
     Iocp                     iocp;
     Database                 database;
     FileArchive              archive;
+    CtrlConn                 ctrl_conn;
     bool                     quit_signaled;
     GameConnMap             *connections;
     array_uintptr_t          connections_with_event;
