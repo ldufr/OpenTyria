@@ -1,8 +1,8 @@
 #ifndef OPCODES_H_INC
 #define OPCODES_H_INC
 
-#define AUTH_CMSG_COUNT (57)
-#define AUTH_SMSG_COUNT (39)
+#define AUTH_CMSG_COUNT (60)
+#define AUTH_SMSG_COUNT (40)
 #define GAME_CMSG_COUNT (194)
 #define GAME_SMSG_COUNT (487)
 

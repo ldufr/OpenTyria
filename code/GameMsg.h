@@ -624,6 +624,7 @@ typedef struct GameSrv_TransferGameServerInfo {
     uint16_t map_id;
     uint8_t  is_explorable;
     uint32_t player_token;
+    uint8_t  h00F;
 } GameSrv_TransferGameServerInfo;
 
 typedef union GameCliMsg {

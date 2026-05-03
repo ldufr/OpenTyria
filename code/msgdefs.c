@@ -338,6 +338,23 @@ MsgField AUTH_CMSG_0056[6] = {
     {TYPE_STRING_16, 32},
 };
 
+MsgField AUTH_CMSG_0057[1] = {
+    {TYPE_MSG_HEADER, 57},
+};
+
+MsgField AUTH_CMSG_0058[4] = {
+    {TYPE_MSG_HEADER, 58},
+    {TYPE_DWORD, 0},
+    {TYPE_DWORD, 0},
+    {TYPE_ARRAY_8, 512},
+};
+
+MsgField AUTH_CMSG_0059[3] = {
+    {TYPE_MSG_HEADER, 59},
+    {TYPE_DWORD, 0},
+    {TYPE_ARRAY_8, 512},
+};
+
 MsgField AUTH_SMSG_0000[2] = {
     {TYPE_MSG_HEADER, 0},
     {TYPE_DWORD, 0},
@@ -606,6 +623,12 @@ MsgField AUTH_SMSG_0038[3] = {
     {TYPE_MSG_HEADER, 38},
     {TYPE_DWORD, 0},
     {TYPE_DWORD, 0},
+};
+
+MsgField AUTH_SMSG_0039[3] = {
+    {TYPE_MSG_HEADER, 39},
+    {TYPE_DWORD, 0},
+    {TYPE_ARRAY_8, 4096},
 };
 
 MsgField GAME_CMSG_0000[2] = {
@@ -4624,7 +4647,7 @@ MsgField GAME_SMSG_0420[14] = {
     {TYPE_BLOB, 8},
 };
 
-MsgField GAME_SMSG_0421[7] = {
+MsgField GAME_SMSG_0421[8] = {
     {TYPE_MSG_HEADER, 421},
     {TYPE_BLOB, 24},
     {TYPE_DWORD, 0},
@@ -4632,6 +4655,7 @@ MsgField GAME_SMSG_0421[7] = {
     {TYPE_WORD, 0},
     {TYPE_BYTE, 0},
     {TYPE_DWORD, 0},
+    {TYPE_BYTE, 0},
 };
 
 MsgField GAME_SMSG_0422[10] = {
@@ -5041,7 +5065,7 @@ MsgField GAME_SMSG_0486[2] = {
     {TYPE_BYTE, 0},
 };
 
-MsgFormat AUTH_CMSG_FORMATS[57] = {
+MsgFormat AUTH_CMSG_FORMATS[60] = {
 // header | field_count | fields | max_size
     {0,   2,  AUTH_CMSG_0000, 6},
     {1,   3,  AUTH_CMSG_0001, 138},
@@ -5100,9 +5124,12 @@ MsgFormat AUTH_CMSG_FORMATS[57] = {
     {54,  1,  AUTH_CMSG_0054, 2},
     {55,  4,  AUTH_CMSG_0055, 94},
     {56,  6,  AUTH_CMSG_0056, 150},
+    {57,  1,  AUTH_CMSG_0057, 2},
+    {58,  4,  AUTH_CMSG_0058, 526},
+    {59,  3,  AUTH_CMSG_0059, 522},
 };
 
-MsgFormat AUTH_SMSG_FORMATS[39] = {
+MsgFormat AUTH_SMSG_FORMATS[40] = {
 // header | field_count | fields | max_size
     {0,   2,  AUTH_SMSG_0000, 6},
     {1,   3,  AUTH_SMSG_0001, 10},
@@ -5143,6 +5170,7 @@ MsgFormat AUTH_SMSG_FORMATS[39] = {
     {36,  1,  AUTH_SMSG_0036, 2},
     {37,  1,  AUTH_SMSG_0037, 2},
     {38,  3,  AUTH_SMSG_0038, 10},
+    {39,  3,  AUTH_SMSG_0039, 4106},
 };
 
 MsgFormat GAME_CMSG_FORMATS[194] = {
@@ -5766,7 +5794,7 @@ MsgFormat GAME_SMSG_FORMATS[487] = {
     {418, 7,  GAME_SMSG_0418, 20},
     {419, 4,  GAME_SMSG_0419, 499},
     {420, 14, GAME_SMSG_0420, 83},
-    {421, 7,  GAME_SMSG_0421, 38},
+    {421, 8,  GAME_SMSG_0421, 39},
     {422, 10, GAME_SMSG_0422, 514},
     {423, 2,  GAME_SMSG_0423, 3},
     {424, 3,  GAME_SMSG_0424, 7},
