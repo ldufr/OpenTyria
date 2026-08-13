@@ -73,6 +73,7 @@ typedef struct GameSrv_LoadSpawnPoint {
 typedef struct GameSrv_RequestPlayers {
     uint16_t header;
     uint8_t  data[16];
+    uint8_t  h0003;
 } GameSrv_RequestPlayers;
 
 typedef struct GameSrv_RequestItems {
