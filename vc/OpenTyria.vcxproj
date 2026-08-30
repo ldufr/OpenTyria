@@ -27,7 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\code\arc4.c">
+    <ClCompile Include="..\code\OpenTyria\arc4.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -35,7 +35,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\array.c">
+    <ClCompile Include="..\code\OpenTyria\array.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -43,7 +43,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\AuthSrv.c">
+    <ClCompile Include="..\code\OpenTyria\AuthSrv.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -51,7 +51,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\AuthSrvCtrl.c">
+    <ClCompile Include="..\code\OpenTyria\AuthSrvCtrl.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -59,8 +59,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\build_open_tyria.c" />
-    <ClCompile Include="..\code\CtrlConn.c">
+    <ClCompile Include="..\code\OpenTyria\build_open_tyria.c" />
+    <ClCompile Include="..\code\OpenTyria\CtrlConn.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -68,7 +68,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\CtrlProto.c">
+    <ClCompile Include="..\code\OpenTyria\CtrlProto.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -76,7 +76,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\Db.c">
+    <ClCompile Include="..\code\OpenTyria\Db.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -84,7 +84,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\FaArchive.c">
+    <ClCompile Include="..\code\OpenTyria\FaArchive.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -92,7 +92,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\FaCompress.c">
+    <ClCompile Include="..\code\OpenTyria\FaCompress.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -100,7 +100,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GameSrv.c">
+    <ClCompile Include="..\code\OpenTyria\GameSrv.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -108,7 +108,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmAgent.c">
+    <ClCompile Include="..\code\OpenTyria\GmAgent.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -116,7 +116,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmChar.c">
+    <ClCompile Include="..\code\OpenTyria\GmChar.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -124,7 +124,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmChat.c">
+    <ClCompile Include="..\code\OpenTyria\GmChat.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -132,7 +132,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmDefaultArmors.c">
+    <ClCompile Include="..\code\OpenTyria\GmDefaultArmors.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -140,7 +140,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmInventory.c">
+    <ClCompile Include="..\code\OpenTyria\GmInventory.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -148,7 +148,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmItem.c">
+    <ClCompile Include="..\code\OpenTyria\GmItem.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -156,7 +156,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmMapDataImport.c">
+    <ClCompile Include="..\code\OpenTyria\GmMapDataImport.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -164,7 +164,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmMapsConfig.c">
+    <ClCompile Include="..\code\OpenTyria\GmMapsConfig.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -172,7 +172,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmParty.c">
+    <ClCompile Include="..\code\OpenTyria\GmParty.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -180,7 +180,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmPathHeap.c">
+    <ClCompile Include="..\code\OpenTyria\GmPathHeap.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -188,7 +188,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmPaths.c">
+    <ClCompile Include="..\code\OpenTyria\GmPaths.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -196,7 +196,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmPlayer.c">
+    <ClCompile Include="..\code\OpenTyria\GmPlayer.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -204,7 +204,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmText.c">
+    <ClCompile Include="..\code\OpenTyria\GmText.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -212,7 +212,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\GmTitleConstData.c">
+    <ClCompile Include="..\code\OpenTyria\GmTitleConstData.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -220,7 +220,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\helper.c">
+    <ClCompile Include="..\code\OpenTyria\helper.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -228,7 +228,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\int.c">
+    <ClCompile Include="..\code\OpenTyria\int.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -236,7 +236,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\iocp.c">
+    <ClCompile Include="..\code\OpenTyria\iocp.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -244,7 +244,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\logs.c">
+    <ClCompile Include="..\code\OpenTyria\logs.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -252,7 +252,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\main.c">
+    <ClCompile Include="..\code\OpenTyria\main.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -260,7 +260,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\msgdefs.c">
+    <ClCompile Include="..\code\OpenTyria\msgdefs.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -268,7 +268,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\msgpack.c">
+    <ClCompile Include="..\code\OpenTyria\msgpack.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -276,7 +276,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\network.c">
+    <ClCompile Include="..\code\OpenTyria\network.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -284,7 +284,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\random.c">
+    <ClCompile Include="..\code\OpenTyria\random.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -292,8 +292,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\sqlite3.c" />
-    <ClCompile Include="..\code\stream.c">
+    <ClCompile Include="..\code\OpenTyria\sqlite3.c" />
+    <ClCompile Include="..\code\OpenTyria\stream.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -301,7 +301,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\tests.c">
+    <ClCompile Include="..\code\OpenTyria\tests.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -309,7 +309,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\win32\iocp_win32.c">
+    <ClCompile Include="..\code\OpenTyria\win32\iocp_win32.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -317,7 +317,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\code\win32\sys_win32.c">
+    <ClCompile Include="..\code\OpenTyria\win32\sys_win32.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">true</ExcludedFromBuild>
@@ -327,64 +327,64 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\code\arc4.h" />
-    <ClInclude Include="..\code\array.h" />
-    <ClInclude Include="..\code\AuthMsg.h" />
-    <ClInclude Include="..\code\AuthSrv.h" />
-    <ClInclude Include="..\code\bitmap.h" />
-    <ClInclude Include="..\code\CtrlConn.h" />
-    <ClInclude Include="..\code\CtrlProto.h" />
-    <ClInclude Include="..\code\Db.h" />
-    <ClInclude Include="..\code\DbSchema.h" />
-    <ClInclude Include="..\code\endian.h" />
-    <ClInclude Include="..\code\errors.h" />
-    <ClInclude Include="..\code\FaArchive.h" />
-    <ClInclude Include="..\code\FaCompress.h" />
-    <ClInclude Include="..\code\GameMsg.h" />
-    <ClInclude Include="..\code\GameSrv.h" />
-    <ClInclude Include="..\code\GmAgent.h" />
-    <ClInclude Include="..\code\GmAgentProperties.h" />
-    <ClInclude Include="..\code\GmAttributes.h" />
-    <ClInclude Include="..\code\GmChar.h" />
-    <ClInclude Include="..\code\GmChat.h" />
-    <ClInclude Include="..\code\GmColors.h" />
-    <ClInclude Include="..\code\GmDefaultArmors.h" />
-    <ClInclude Include="..\code\GmDefs.h" />
-    <ClInclude Include="..\code\GmErrors.h" />
-    <ClInclude Include="..\code\GmFriend.h" />
-    <ClInclude Include="..\code\GmIdTable.h" />
-    <ClInclude Include="..\code\GmInventory.h" />
-    <ClInclude Include="..\code\GmItem.h" />
-    <ClInclude Include="..\code\GmMap.h" />
-    <ClInclude Include="..\code\GmMapDataImport.h" />
-    <ClInclude Include="..\code\GmMaps.h" />
-    <ClInclude Include="..\code\GmMapsConfig.h" />
-    <ClInclude Include="..\code\GmMath.h" />
-    <ClInclude Include="..\code\GmParty.h" />
-    <ClInclude Include="..\code\GmPathHeap.h" />
-    <ClInclude Include="..\code\GmPaths.h" />
-    <ClInclude Include="..\code\GmPlayer.h" />
-    <ClInclude Include="..\code\GmText.h" />
-    <ClInclude Include="..\code\GmTitle.h" />
-    <ClInclude Include="..\code\GmTitleConstData.h" />
-    <ClInclude Include="..\code\GmTitles.h" />
-    <ClInclude Include="..\code\GmUuid.h" />
-    <ClInclude Include="..\code\int.h" />
-    <ClInclude Include="..\code\iocp.h" />
-    <ClInclude Include="..\code\logs.h" />
-    <ClInclude Include="..\code\macros.h" />
-    <ClInclude Include="..\code\msgdefs.h" />
-    <ClInclude Include="..\code\msgpack.h" />
-    <ClInclude Include="..\code\network.h" />
-    <ClInclude Include="..\code\opcodes.h" />
-    <ClInclude Include="..\code\proto.h" />
-    <ClInclude Include="..\code\random.h" />
-    <ClInclude Include="..\code\slice.h" />
-    <ClInclude Include="..\code\sqlite3.h" />
-    <ClInclude Include="..\code\stb_ds.h" />
-    <ClInclude Include="..\code\stb_sprintf.h" />
-    <ClInclude Include="..\code\stream.h" />
-    <ClInclude Include="..\code\sys.h" />
+    <ClInclude Include="..\code\OpenTyria\arc4.h" />
+    <ClInclude Include="..\code\OpenTyria\array.h" />
+    <ClInclude Include="..\code\OpenTyria\AuthMsg.h" />
+    <ClInclude Include="..\code\OpenTyria\AuthSrv.h" />
+    <ClInclude Include="..\code\OpenTyria\bitmap.h" />
+    <ClInclude Include="..\code\OpenTyria\CtrlConn.h" />
+    <ClInclude Include="..\code\OpenTyria\CtrlProto.h" />
+    <ClInclude Include="..\code\OpenTyria\Db.h" />
+    <ClInclude Include="..\code\OpenTyria\DbSchema.h" />
+    <ClInclude Include="..\code\OpenTyria\endian.h" />
+    <ClInclude Include="..\code\OpenTyria\errors.h" />
+    <ClInclude Include="..\code\OpenTyria\FaArchive.h" />
+    <ClInclude Include="..\code\OpenTyria\FaCompress.h" />
+    <ClInclude Include="..\code\OpenTyria\GameMsg.h" />
+    <ClInclude Include="..\code\OpenTyria\GameSrv.h" />
+    <ClInclude Include="..\code\OpenTyria\GmAgent.h" />
+    <ClInclude Include="..\code\OpenTyria\GmAgentProperties.h" />
+    <ClInclude Include="..\code\OpenTyria\GmAttributes.h" />
+    <ClInclude Include="..\code\OpenTyria\GmChar.h" />
+    <ClInclude Include="..\code\OpenTyria\GmChat.h" />
+    <ClInclude Include="..\code\OpenTyria\GmColors.h" />
+    <ClInclude Include="..\code\OpenTyria\GmDefaultArmors.h" />
+    <ClInclude Include="..\code\OpenTyria\GmDefs.h" />
+    <ClInclude Include="..\code\OpenTyria\GmErrors.h" />
+    <ClInclude Include="..\code\OpenTyria\GmFriend.h" />
+    <ClInclude Include="..\code\OpenTyria\GmIdTable.h" />
+    <ClInclude Include="..\code\OpenTyria\GmInventory.h" />
+    <ClInclude Include="..\code\OpenTyria\GmItem.h" />
+    <ClInclude Include="..\code\OpenTyria\GmMap.h" />
+    <ClInclude Include="..\code\OpenTyria\GmMapDataImport.h" />
+    <ClInclude Include="..\code\OpenTyria\GmMaps.h" />
+    <ClInclude Include="..\code\OpenTyria\GmMapsConfig.h" />
+    <ClInclude Include="..\code\OpenTyria\GmMath.h" />
+    <ClInclude Include="..\code\OpenTyria\GmParty.h" />
+    <ClInclude Include="..\code\OpenTyria\GmPathHeap.h" />
+    <ClInclude Include="..\code\OpenTyria\GmPaths.h" />
+    <ClInclude Include="..\code\OpenTyria\GmPlayer.h" />
+    <ClInclude Include="..\code\OpenTyria\GmText.h" />
+    <ClInclude Include="..\code\OpenTyria\GmTitle.h" />
+    <ClInclude Include="..\code\OpenTyria\GmTitleConstData.h" />
+    <ClInclude Include="..\code\OpenTyria\GmTitles.h" />
+    <ClInclude Include="..\code\OpenTyria\GmUuid.h" />
+    <ClInclude Include="..\code\OpenTyria\int.h" />
+    <ClInclude Include="..\code\OpenTyria\iocp.h" />
+    <ClInclude Include="..\code\OpenTyria\logs.h" />
+    <ClInclude Include="..\code\OpenTyria\macros.h" />
+    <ClInclude Include="..\code\OpenTyria\msgdefs.h" />
+    <ClInclude Include="..\code\OpenTyria\msgpack.h" />
+    <ClInclude Include="..\code\OpenTyria\network.h" />
+    <ClInclude Include="..\code\OpenTyria\opcodes.h" />
+    <ClInclude Include="..\code\OpenTyria\proto.h" />
+    <ClInclude Include="..\code\OpenTyria\random.h" />
+    <ClInclude Include="..\code\OpenTyria\slice.h" />
+    <ClInclude Include="..\code\OpenTyria\sqlite3.h" />
+    <ClInclude Include="..\code\OpenTyria\stb_ds.h" />
+    <ClInclude Include="..\code\OpenTyria\stb_sprintf.h" />
+    <ClInclude Include="..\code\OpenTyria\stream.h" />
+    <ClInclude Include="..\code\OpenTyria\sys.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="mbedtls.vcxproj">
@@ -392,7 +392,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\code\msgdefs.info" />
+    <None Include="..\code\OpenTyria\msgdefs.info" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{83B40536-81CC-414E-A43F-CDD5A365E8A6}</ProjectGuid>

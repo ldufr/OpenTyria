@@ -12,7 +12,7 @@ auth_smsg_names = {}
 game_cmsg_names = {}
 game_smsg_names = {}
 
-opcodes_path = utils.get_path('code', 'opcodes.h')
+opcodes_path = utils.get_path('code', 'OpenTyria', 'opcodes.h')
 lines = open(opcodes_path, 'r').read().splitlines()
 
 for line in lines:

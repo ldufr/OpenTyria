@@ -367,14 +367,14 @@ class FileBuilder:
 
 def main(argv):
     proc = Process.from_name('Gw.exe')
-    file_packets = utils.get_path('code', 'msgdefs.c')
+    file_packets = utils.get_path('code', 'OpenTyria', 'msgdefs.c')
     if os.path.exists(file_packets):
-        file_packets_bak = utils.get_path('code', 'msgdefs.c.bak')
+        file_packets_bak = utils.get_path('code', 'OpenTyria', 'msgdefs.c.bak')
         if os.path.exists(file_packets_bak):
             os.unlink(file_packets_bak)
         os.rename(file_packets, file_packets_bak)
 
-    file_packets_info = utils.get_path('code', 'msgdefs.info')
+    file_packets_info = utils.get_path('code', 'OpenTyria', 'msgdefs.info')
     if os.path.exists(file_packets_info):
         os.unlink(file_packets_info)
 
