@@ -1504,7 +1504,7 @@ MsgField GAME_CMSG_0145[3] = {
 
 MsgField GAME_CMSG_0146[2] = {
     {TYPE_MSG_HEADER, 146},
-    {TYPE_ARRAY_8, 112},
+    {TYPE_ARRAY_8, 116},
 };
 
 MsgField GAME_CMSG_0147[2] = {
@@ -5324,7 +5324,7 @@ MsgFormat GAME_CMSG_FORMATS[194] = {
     {143, 1,  GAME_CMSG_0143, 2},
     {144, 3,  GAME_CMSG_0144, 19},
     {145, 3,  GAME_CMSG_0145, 4},
-    {146, 2,  GAME_CMSG_0146, 118},
+    {146, 2,  GAME_CMSG_0146, 122},
     {147, 2,  GAME_CMSG_0147, 4},
     {148, 2,  GAME_CMSG_0148, 3},
     {149, 2,  GAME_CMSG_0149, 3},
