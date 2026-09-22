@@ -322,7 +322,7 @@ void AuthSrv_Free(AuthSrv *srv)
     array_free(&srv->events);
     mbedtls_chacha20_free(&srv->random);
     Db_Close(&srv->database);
-    stbds_hmfree(srv->connected_accounts);
+    stbds_hmfree(srv->accounts);
     stbds_hmfree(srv->games);
 }
 
@@ -364,26 +364,44 @@ CtrlConnection *AuthSrv_GetCtrlConnection(AuthSrv *srv, uintptr_t token)
     return &obj->ctrl_connection;
 }
 
-ConnectedAccountInfo* AuthSrv_GetConnectedAccount(AuthSrv *srv, GmUuid account_id)
+GlobalAccountRegistry* AuthSrv_GetAccount(AuthSrv *srv, GmUuid account_id)
 {
     ptrdiff_t idx;
-    if ((idx = stbds_hmgeti(srv->connected_accounts, account_id)) == -1) {
+    if ((idx = stbds_hmgeti(srv->accounts, account_id)) == -1) {
         return NULL;
     }
-    return &srv->connected_accounts[(size_t)idx];
+    return &srv->accounts[(size_t)idx];
 }
 
-void AuthSrv_DelConnectedAccount(AuthSrv *srv, GmUuid account_id)
+void AuthSrv_MarkAccountAuthDisconnected(AuthSrv *srv, GmUuid account_id)
 {
-    stbds_hmdel(srv->connected_accounts, account_id);
+    GlobalAccountRegistry *account;
+    if ((account = AuthSrv_GetAccount(srv, account_id)) != NULL) {
+        account->auth_conn_token = 0;
+        if (account->current_server_id == 0) {
+            stbds_hmdel(srv->accounts, account_id);
+        }
+    }
 }
 
-ConnectedAccountInfo* AuthSrv_AddConnectedAccount(AuthSrv *srv, GmUuid account_id)
+void AuthSrv_MarkAccountGameDisconnected(AuthSrv *srv, GmUuid account_id)
 {
-    ConnectedAccountInfo connected = {0};
+    GlobalAccountRegistry *account;
+    if ((account = AuthSrv_GetAccount(srv, account_id)) != NULL) {
+        account->current_server_id = 0;
+        account->current_player_id = 0;
+        if (account->auth_conn_token == 0) {
+            stbds_hmdel(srv->accounts, account_id);
+        }
+    }
+}
+
+GlobalAccountRegistry* AuthSrv_AddConnectedAccount(AuthSrv *srv, GmUuid account_id)
+{
+    GlobalAccountRegistry connected = {0};
     connected.key = account_id;
-    stbds_hmputs(srv->connected_accounts, connected);
-    return &srv->connected_accounts[stbds_temp(srv->connected_accounts - 1)];
+    stbds_hmputs(srv->accounts, connected);
+    return &srv->accounts[stbds_temp(srv->accounts - 1)];
 }
 
 void AuthSrv_KillAuthConnectionByToken(AuthSrv *srv, uintptr_t token)
@@ -413,12 +431,7 @@ void AuthSrv_CloseAuthConnection(AuthSrv *srv, AuthConnection *conn)
     IoSource_reset(&conn->source);
     array_clear(&conn->outgoing);
     array_add(&srv->objects_to_remove, conn->token);
-
-    // @Cleanup:
-    // This is almost certainly wrong. We shouldn't delete this if the player
-    // is still in a game srv. Otherwise, the player could reconnect and start
-    // playing in a second game server.
-    AuthSrv_DelConnectedAccount(srv, conn->account_id);
+    AuthSrv_MarkAccountAuthDisconnected(srv, conn->account_id);
 }
 
 void AuthSrv_CloseCtrlConnection(AuthSrv *srv, CtrlConnection *conn)
@@ -624,14 +637,14 @@ int AuthSrv_HandlePortalAccountLogin(AuthSrv *srv, AuthConnection *conn, AuthCli
         return ERR_OK;
     }
 
-    ConnectedAccountInfo *connected_account;
-    if ((connected_account = AuthSrv_GetConnectedAccount(srv, session.account_id)) != NULL) {
+    GlobalAccountRegistry *account;
+    if ((account = AuthSrv_GetAccount(srv, session.account_id)) != NULL) {
         log_info("There was already a connection connected to the account, closing it");
-        AuthSrv_KillAuthConnectionByToken(srv, connected_account->auth_conn_token);
-        connected_account->auth_conn_token = conn->token;
+        AuthSrv_KillAuthConnectionByToken(srv, account->auth_conn_token);
+        account->auth_conn_token = conn->token;
     } else {
-        connected_account = AuthSrv_AddConnectedAccount(srv, session.account_id);
-        connected_account->auth_conn_token = conn->token;
+        account = AuthSrv_AddConnectedAccount(srv, session.account_id);
+        account->auth_conn_token = conn->token;
     }
 
     conn->user_id = user_id;
@@ -641,14 +654,14 @@ int AuthSrv_HandlePortalAccountLogin(AuthSrv *srv, AuthConnection *conn, AuthCli
 
     if ((err = Db_GetAccount(&srv->database, conn->account_id, &conn->account)) != 0) {
         AuthSrv_SendRequestResponse(conn, msg->req_id, GM_ERROR_NETWORK_ERROR);
-        AuthSrv_DelConnectedAccount(srv, connected_account->account_id);
+        AuthSrv_MarkAccountAuthDisconnected(srv, account->account_id);
         return ERR_OK;
     }
     
     array_clear(&conn->characters);
     if ((err = Db_GetCharacters(&srv->database, conn->account_id, &conn->characters)) != 0) {
         AuthSrv_SendRequestResponse(conn, msg->req_id, GM_ERROR_NETWORK_ERROR);
-        AuthSrv_DelConnectedAccount(srv, connected_account->account_id);
+        AuthSrv_MarkAccountAuthDisconnected(srv, account->account_id);
         return ERR_OK;
     }
 
@@ -769,14 +782,14 @@ int AuthSrv_HandleRequestGameInstance(AuthSrv *srv, AuthConnection *conn, AuthCl
         return ERR_OK;
     }
 
-    ConnectedAccountInfo *connected;
-    if ((connected = AuthSrv_GetConnectedAccount(srv, conn->account_id)) == NULL) {
-        log_error("Account expected to be connected");
+    GlobalAccountRegistry *account;
+    if ((account = AuthSrv_GetAccount(srv, conn->account_id)) == NULL) {
+        log_error("Account expected to be account");
         AuthSrv_SendRequestResponse(conn, msg->req_id, GM_ERROR_NETWORK_ERROR);
         return ERR_OK;
     }
 
-    if (connected->current_server_id != 0) {
+    if (account->current_server_id != 0) {
         // @Cleanup: kick the client from the existing server and allow login.
         log_warn("We should kick the user from the server");
         AuthSrv_SendRequestResponse(conn, msg->req_id, GM_ERROR_NETWORK_ERROR);
@@ -788,7 +801,7 @@ int AuthSrv_HandleRequestGameInstance(AuthSrv *srv, AuthConnection *conn, AuthCl
         char_id = conn->characters.ptr[conn->selected_character_idx].char_id;
     }
 
-    connected->char_id = char_id;
+    account->char_id = char_id;
 
     size_t idx;
     if (AuthSrvCtrl_FindCompatibleGameSrv(srv, district, &idx) != 0) {
@@ -802,8 +815,8 @@ int AuthSrv_HandleRequestGameInstance(AuthSrv *srv, AuthConnection *conn, AuthCl
     uint32_t player_token = random_uint32(&srv->random);
 
     GameSrvMetadata *metadata = &srv->games[idx];
-    connected->current_server_id = metadata->server_id;
-    connected->current_player_id = player_token;
+    account->current_server_id = metadata->server_id;
+    account->current_player_id = player_token;
 
     if (metadata->ctrl_conn == 0) {
         AuthTransfer *transfer = array_push(&metadata->pending_transfers, 1);
@@ -861,24 +874,16 @@ void AuthSrvCtrl_SendCompletePlayerTransfer(
     }
 }
 
-int AuthSrvCtrl_HandlePlayerLeft(AuthSrv *srv, CtrlConnection *conn, CtrlMsg_PlayerLeft *msg)
+int AuthSrvCtrl_HandlePlayerLeft(AuthSrv *srv, CtrlMsg_PlayerLeft *msg)
 {
-    ConnectedAccountInfo *connected;
-    if ((connected = AuthSrv_GetConnectedAccount(srv, msg->account_id)) == NULL) {
-        return ERR_OK;
-    }
-
-    if (connected->current_server_id == conn->server_id) {
-        connected->current_server_id = 0;
-    }
-
+    AuthSrv_MarkAccountGameDisconnected(srv, msg->account_id);
     return ERR_OK;
 }
 
 int AuthSrvCtrl_HandlerStartPlayerTransfer(AuthSrv *srv, CtrlConnection *conn, CtrlMsg_StartPlayerTransfer *msg)
 {
-    ConnectedAccountInfo *connected;
-    if ((connected = AuthSrv_GetConnectedAccount(srv, msg->account_id)) == NULL) {
+    GlobalAccountRegistry *connected;
+    if ((connected = AuthSrv_GetAccount(srv, msg->account_id)) == NULL) {
         log_error("Account expected to be connected");
         AuthSrvCtrl_SendCancelPlayerTransfer(conn);
         return ERR_OK;
@@ -1149,7 +1154,7 @@ void AuthSrv_DoPostHandshake(AuthSrv *srv, Connection *conn)
         GmUuid char_id;
         uuid_dec_le(&char_id, conn->game_version.character_uuid);
 
-        ConnectedAccountInfo *connected = AuthSrv_GetConnectedAccount(srv, account_id);
+        GlobalAccountRegistry *connected = AuthSrv_GetAccount(srv, account_id);
         if (!uuid_equals(&connected->char_id, &char_id) ||
             connected->current_server_id != conn->game_version.map_token ||
             connected->current_player_id != conn->game_version.player_token)
@@ -1429,7 +1434,7 @@ void AuthSrv_ProcessCtrlConnectionEvent(AuthSrv *srv, CtrlConnection *conn, Even
             err = AuthSrvCtrl_HandleServerReady(srv, conn, &msg->ServerReady);
             break;
         case CtrlMsgId_PlayerLeft:
-            err = AuthSrvCtrl_HandlePlayerLeft(srv, conn, &msg->PlayerLeft);
+            err = AuthSrvCtrl_HandlePlayerLeft(srv, &msg->PlayerLeft);
             break;
         case CtrlMsgId_StartPlayerTransfer:
             err = AuthSrvCtrl_HandlerStartPlayerTransfer(srv, conn, &msg->StartPlayerTransfer);
@@ -1524,6 +1529,10 @@ void AuthSrv_Update(AuthSrv *srv)
 
     for (size_t idx = 0; idx < srv->objects_to_remove.len; ++idx) {
         uintptr_t token = array_at(&srv->objects_to_remove, idx);
+        IoObject *obj;
+        if ((obj = AuthSrv_GetObject(srv, token)) != NULL) {
+            memset(obj, 0, sizeof(*obj));
+        }
         stbds_hmdel(srv->objects, token);
     }
 

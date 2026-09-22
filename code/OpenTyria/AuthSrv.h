@@ -96,7 +96,7 @@ typedef struct IoObjectMap {
     IoObject  value;
 } IoObjectMap;
 
-typedef struct ConnectedAccountInfo {
+typedef struct GlobalAccountRegistry {
     union
     {
         GmUuid key;
@@ -106,7 +106,7 @@ typedef struct ConnectedAccountInfo {
     uint32_t  current_server_id;
     uint32_t  current_player_id;
     uintptr_t auth_conn_token;
-} ConnectedAccountInfo;
+} GlobalAccountRegistry;
 
 typedef enum AuthTransferType {
     AuthTransferType_None,
@@ -153,7 +153,7 @@ typedef struct AuthSrv {
     ArrayEvent               events;
     mbedtls_chacha20_context random;
     Database                 database;
-    ConnectedAccountInfo    *connected_accounts;
+    GlobalAccountRegistry   *accounts;
     SocketAddr               internal_address;
     GameSrvMetadata         *games;
 } AuthSrv;
