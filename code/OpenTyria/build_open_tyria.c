@@ -130,7 +130,6 @@
 #include "msgpack.h"
 #include "proto.h"
 
-#include "CtrlProto.h"
 #include "CtrlConn.h"
 #include "GameSrv.h"
 
@@ -146,7 +145,6 @@
 #include "AuthSrv.c"
 #include "Db.c"
 #include "CtrlConn.c"
-#include "CtrlProto.c"
 #include "FaArchive.c"
 #include "FaCompress.c"
 #include "GameSrv.c"
