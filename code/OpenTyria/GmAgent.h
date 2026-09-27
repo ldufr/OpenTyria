@@ -4,7 +4,7 @@ typedef enum AgentType {
     AgentType_None   = 0,
     AgentType_Living = 1,
     AgentType_Gadget = 2,
-    AgentType_Item   = 3,
+    AgentType_Item   = 4,
 } AgentType;
 
 #define CHAR_CLASS_BASE_MASK    0xF0000000
