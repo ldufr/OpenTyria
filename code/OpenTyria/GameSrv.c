@@ -714,7 +714,8 @@ void GameSrv_SendInstanceLoadInfo(GameSrv *srv, GameConnection *conn, GmPlayer *
     GameSrv_InstanceInfo *msg = &buffer->instance_info;
     msg->agent = player->agent_id;
     msg->map_id = srv->district.map_id;
-    msg->is_explorable = 0; // what to put here?
+    msg->is_explorable = 1; // what to put here?
+                            // This control if we can drop item on the ground or not. (maybe more)
     msg->district = srv->district.district_number;
     msg->language = DistrictLanguage_ToInt(srv->district.language);
     msg->is_observer = 0;
@@ -1890,6 +1891,9 @@ int GameSrv_ProcessPlayerMessage(GameSrv *srv, uint16_t player_id, GameCliMsg *m
         break;
     case GAME_CMSG_LAST_POS_BEFORE_MOVE_CANCELED:
         err = GameSrv_HandleLastPosOnMoveCanceled(srv, player_id, &msg->last_pos_before_move_canceled);
+        break;
+    case GAME_CMSG_DROP_ITEM:
+        err = GameSrv_HandleDropItem(srv, player_id, &msg->drop_item);
         break;
     default:
         log_warn(

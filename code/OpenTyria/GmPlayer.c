@@ -211,23 +211,23 @@ void GameSrv_SendUnlockedMaps(GameSrv *srv, GameConnection *conn, GmPlayer *play
     GameSrv_UnlockedMaps *msg = &buffer->unlocked_maps;
 
     STATIC_ASSERT(sizeof(ch->completed_missions_nm.bitmap) <= sizeof(msg->completed_missions_nm_buf));
-    msg->completed_missions_nm_len = (uint32_t) bitmap_length(ch->completed_missions_nm);
+    msg->completed_missions_nm_len = ((uint32_t) bitmap_length(ch->completed_missions_nm) / BITS_PER_UINT32);
     memcpy_u32(msg->completed_missions_nm_buf, ch->completed_missions_nm.bitmap, msg->completed_missions_nm_len);
 
     STATIC_ASSERT(sizeof(ch->completed_bonuses_nm.bitmap) <= sizeof(msg->completed_bonuses_nm_buf));
-    msg->completed_bonuses_nm_len = (uint32_t) bitmap_length(ch->completed_bonuses_nm);
+    msg->completed_bonuses_nm_len = ((uint32_t) bitmap_length(ch->completed_bonuses_nm) / BITS_PER_UINT32);
     memcpy_u32(msg->completed_bonuses_nm_buf, ch->completed_bonuses_nm.bitmap, sizeof(msg->completed_bonuses_nm_buf));
 
     STATIC_ASSERT(sizeof(ch->completed_missions_hm.bitmap) <= sizeof(msg->completed_missions_hm_buf));
-    msg->completed_missions_hm_len = (uint32_t) bitmap_length(ch->completed_missions_hm);
+    msg->completed_missions_hm_len = ((uint32_t) bitmap_length(ch->completed_missions_hm) / BITS_PER_UINT32);
     memcpy_u32(msg->completed_missions_hm_buf, ch->completed_missions_hm.bitmap, sizeof(msg->completed_missions_hm_buf));
 
     STATIC_ASSERT(sizeof(ch->completed_bonuses_hm.bitmap) <= sizeof(msg->completed_bonuses_hm_buf));
-    msg->completed_bonuses_hm_len = (uint32_t) bitmap_length(ch->completed_bonuses_hm);
+    msg->completed_bonuses_hm_len = ((uint32_t) bitmap_length(ch->completed_bonuses_hm) / BITS_PER_UINT32);
     memcpy_u32(msg->completed_bonuses_hm_buf, ch->completed_bonuses_hm.bitmap, sizeof(msg->completed_bonuses_hm_buf));
 
     STATIC_ASSERT(sizeof(ch->unlocked_maps.bitmap) <= sizeof(msg->unlocked_maps_buf));
-    msg->unlocked_maps_len = (uint32_t) bitmap_length(ch->unlocked_maps);
+    msg->unlocked_maps_len = ((uint32_t) bitmap_length(ch->unlocked_maps) / BITS_PER_UINT32);
     memcpy_u32(msg->unlocked_maps_buf, ch->unlocked_maps.bitmap, sizeof(msg->unlocked_maps_buf));
 
     GameConnection_SendMessage(conn, buffer, sizeof(*msg));

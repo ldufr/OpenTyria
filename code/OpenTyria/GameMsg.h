@@ -628,6 +628,12 @@ typedef struct GameSrv_TransferGameServerInfo {
     uint8_t  h00F;
 } GameSrv_TransferGameServerInfo;
 
+typedef struct GameSrv_DropItem {
+    uint16_t header;
+    uint32_t item_id;
+    uint8_t  count;
+} GameSrv_DropItem;
+
 typedef union GameCliMsg {
     uint16_t                             header;
     uint8_t                              buffer[MSG_MAX_BUFFER_SIZE];
@@ -640,6 +646,7 @@ typedef union GameCliMsg {
     GameSrv_ChatMessage                  chat_message;
     GameSrv_MoveToCoord                  move_to_coord;
     GameSrv_LastPosBeforeMoveCanceled    last_pos_before_move_canceled;
+    GameSrv_DropItem                     drop_item;
 } GameCliMsg;
 
 typedef union GameSrvMsg {

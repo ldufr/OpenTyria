@@ -173,8 +173,11 @@ void GmBag_InitStorage(GmBagArray *bags, BagModelId model_id, uint16_t bag_id);
 void GmBag_SetItem(GmBag *bag, size_t slot, uint32_t item_id);
 bool GmBag_TryAddToBag(GmBag *bag, uint32_t item_id);
 bool GmBag_IsVolatile(BagModelId model_id);
+bool GmBag_FindItem(GmBagArray *bags, uint32_t item_id, GmBag **out_bag, uint8_t *out_slot);
 
 void GameSrv_FreeBagItems(GameSrv *srv, GmPlayer *player, GmBag *bag);
 void GameSrv_CreateDefaultBags(GameSrv *srv, GmPlayer *player);
 void GameSrv_SendBagItems(GameSrv *srv, GameConnection *conn, GmBag *bag);
 void GameSrv_SendInventory(GameSrv *srv, GameConnection *conn, uint32_t player_id);
+
+int GameSrv_HandleDropItem(GameSrv *srv, uint16_t player_id, GameSrv_DropItem *msg);

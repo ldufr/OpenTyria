@@ -41,7 +41,7 @@ void GameSrv_SendItemStreamCreate(GameSrv *srv, GameConnection *conn)
     GameConnection_SendMessage(conn, buffer, sizeof(*msg));
 }
 
-void GameSrv_SendCreateNamedItem(GameSrv *srv, GameConnection *conn, GmItem *item)
+GameSrvMsg* GameSrv_BuildCreateNamedItem(GameSrv *srv, GmItem *item, size_t *size)
 {
     GameSrvMsg *buffer = GameSrv_BuildMsg(srv, GAME_SMSG_CREATE_NAMED_ITEM);
     GameSrv_CreateNamedItem *msg = &buffer->create_named_item;
@@ -62,7 +62,22 @@ void GameSrv_SendCreateNamedItem(GameSrv *srv, GameConnection *conn, GmItem *ite
     msg->n_modifiers = item->modifiers.size;
     STATIC_ASSERT(ARRAY_SIZE(msg->modifiers) <= ARRAY_SIZE(item->modifiers.data));
     memcpy_u32(msg->modifiers, item->modifiers.data, item->modifiers.size);
-    GameConnection_SendMessage(conn, buffer, sizeof(*msg));
+    *size = sizeof(*msg);
+    return buffer;
+}
+
+void GameSrv_SendCreateNamedItem(GameSrv *srv, GameConnection *conn, GmItem *item)
+{
+    size_t size;
+    GameSrvMsg *buffer = GameSrv_BuildCreateNamedItem(srv, item, &size);
+    GameConnection_SendMessage(conn, buffer, size);
+}
+
+void GameSrv_BroadcastCreateNamedItem(GameSrv *srv, GmItem *item)
+{
+    size_t size;
+    GameSrvMsg *buffer = GameSrv_BuildCreateNamedItem(srv, item, &size);
+    GameSrv_BroadcastMessage(srv, buffer, size);
 }
 
 void GameSrv_SendCreateUnamedItem(GameSrv *srv, GameConnection *conn, GmItem *item)

@@ -95,6 +95,56 @@ def main(args):
         # now = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         print(f'RecvPacket ({ctx.Esi:X}): {header}, 0x{header:X}, {name}')
 
+        if name == 'GAME_SMSG_AGENT_PROPERTY_UPDATE_INT':
+            prop_id, agent_id, val = proc.read(packet + 4, 'III')
+            print(f'prop_id = {prop_id}, agent_id = {agent_id}, val = {val}')
+
+        if name == 'GAME_SMSG_AGENT_UPDATE_SPEED_BASE':
+            agent_id, speed = proc.read(packet + 4, 'If')
+            print(f'agent_id = {agent_id}, speed = {speed}')
+
+        if name == 'GAME_SMSG_AGENT_UPDATE_EFFECTS':
+            agent_id, val = proc.read(packet + 4, 'II')
+            print(f'agent_id = {agent_id}, val = {val}')
+
+        if name == 'GAME_SMSG_CREATE_NAMED_ITEM':
+            item_id, file_id, item_type, dye_tint, dye_colors, materials, unk1, flags, value, model_id, quantity = proc.read(packet + 4, 'IIIIIIIIIII')
+            print(f'>> item_id = {item_id}, file_id = 0x{file_id:X}, item_type = {item_type}, dye_tint = {dye_tint}, dye_colors = {dye_colors}, materials = {materials}, unk1 = {unk1}, flags = 0x{flags:X}, value = {value}, model_id = {model_id}, quantity = {quantity}')
+
+        if name == 'GAME_SMSG_WORLD_CREATE_AGENT':
+            data = proc.read(packet + 4, 'IIIIffIffIffIIIIIIIffffIIffI')
+            agent_id = data[0]
+            model_id = data[1]
+            agent_type = data[2]
+            h000B = data[3]
+            pos_x = data[4]
+            pos_y = data[5]
+            plane = data[6]
+            direction_x = data[7]
+            direction_y = data[8]
+            h001E = data[9]
+            speed_base = data[10]
+            h0023 = data[11]
+            h0027 = data[12]
+            model_type = data[13]
+            h002F = data[14]
+            h0033 = data[15]
+            h0037 = data[16]
+            h003B = data[17]
+            h003F = data[18]
+            h0043_x = data[19]
+            h0043_y = data[20]
+            h004B_x = data[21]
+            h004B_y = data[22]
+            h0053 = data[23]
+            h0055 = data[24]
+            h0059_x = data[25]
+            h0059_y = data[26]
+            h0061 = data[27]
+            print(f'>> agent_id = {agent_id}, model_id = {model_id}, agent_type = {agent_type}, h000B = {h000B}, pos_x = {pos_x}, pos_y = {pos_y}, plane = {plane}, direction_x = {direction_x}, direction_y = {direction_y}, h001E = {h001E}, speed_base = {speed_base}, h0023 = {h0023}, h0027 = {h0027}, model_type = {model_type}, h002F = {h002F}, h0033 = {h0033}, h0037 = {h0037}, h003B = {h003B}, h003F = {h003F}, h0043_x = {h0043_x}, h0043_y = {h0043_y}, h004B_x = {h004B_x}, h004B_y = {h004B_y}, h0053 = {h0053}, h0055 = {h0055}, h0059_x = {h0059_x}, h0059_y = {h0059_y}, h0061 = {h0061}')
+
+        """
+
         if name == 'GAME_SMSG_PING_REPLY':
             val, = proc.read(packet + 4, 'I')
             print(f'>> val = {val} (0x{val:X})')
@@ -119,7 +169,6 @@ def main(args):
             req_id, status = proc.read(packet + 4, 'II')
             print(f'>> req_id = {req_id}, status = {status}')
 
-        """
         if name == 'GAME_SMSG_WINDOW_TRADER':
             tab_typ, item_type, item_amount, h00d = proc.read(packet + 4, 'IIII')
             print(f'>> tab_typ = {tab_typ}, item_type = {item_type}, item_amount = {item_amount}, h00d = {h00d}')
@@ -163,38 +212,6 @@ def main(args):
             prop_id, agent_id, value = proc.read(packet + 4, 'IIf')
             print(f'>> prop_id = {prop_id}, agent_id = {agent_id}, value = {value}')
 
-        if name == 'GAME_SMSG_AGENT_SPAWNED':
-            data = proc.read(packet + 4, 'IIIIffIffIffIIIIIIIffffIIffI')
-            agent_id = data[0]
-            model_id = data[1]
-            agent_type = data[2]
-            h000B = data[3]
-            pos_x = data[4]
-            pos_y = data[5]
-            plane = data[6]
-            direction_x = data[7]
-            direction_y = data[8]
-            h001E = data[9]
-            speed_base = data[10]
-            h0023 = data[11]
-            h0027 = data[12]
-            model_type = data[13]
-            h002F = data[14]
-            h0033 = data[15]
-            h0037 = data[16]
-            h003B = data[17]
-            h003F = data[18]
-            h0043_x = data[19]
-            h0043_y = data[20]
-            h004B_x = data[21]
-            h004B_y = data[22]
-            h0053 = data[23]
-            h0055 = data[24]
-            h0059_x = data[25]
-            h0059_y = data[26]
-            h0061 = data[27]
-            print(f'>> agent_id = {agent_id}, model_id = {model_id}, agent_type = {agent_type}, h000B = {h000B}, pos_x = {pos_x}, pos_y = {pos_y}, plane = {plane}, direction_x = {direction_x}, direction_y = {direction_y}, h001E = {h001E}, speed_base = {speed_base}, h0023 = {h0023}, h0027 = {h0027}, model_type = {model_type}, h002F = {h002F}, h0033 = {h0033}, h0037 = {h0037}, h003B = {h003B}, h003F = {h003F}, h0043_x = {h0043_x}, h0043_y = {h0043_y}, h004B_x = {h004B_x}, h004B_y = {h004B_y}, h0053 = {h0053}, h0055 = {h0055}, h0059_x = {h0059_x}, h0059_y = {h0059_y}, h0061 = {h0061}')
-
         if name == 'GAME_SMSG_UPDATE_CURRENT_MAP' and False:
             map_id, unk = proc.read(packet + 4, 'II')
             print(f'>> map_id = {map_id}, unk = {unk}')
@@ -206,10 +223,6 @@ def main(args):
         if name == 'GAME_SMSG_INSTANCE_LOADED' and False:
             player_team_token = proc.read(packet + 4, 'I')
             print(f'>> player_team_token = {player_team_token}')
-
-        if name == 'GAME_SMSG_CREATE_NAMED_ITEM':
-            item_id, file_id, item_type, dye_tint, dye_colors, materials, unk1, flags, value, model_id, quantity = proc.read(packet + 4, 'IIIIIIIIIII')
-            print(f'>> item_id = {item_id}, file_id = 0x{file_id:X}, item_type = {item_type}, dye_tint = {dye_tint}, dye_colors = {dye_colors}, materials = {materials}, unk1 = {unk1}, flags = 0x{flags:X}, value = {value}, model_id = {model_id}, quantity = {quantity}')
 
         if name == 'GAME_SMSG_CREATE_UNNAMED_ITEM':
             item_id, file_id, item_type, dye_tint, dye_colors, unk5, unk6, flags, unk8 = proc.read(packet + 4, 'IIIIIIIII')

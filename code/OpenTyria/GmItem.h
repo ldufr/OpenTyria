@@ -165,6 +165,7 @@ GmItem* GameSrv_GetItemById(GameSrv *srv, uint32_t item_id);
 
 void GameSrv_SendItemStreamCreate(GameSrv *srv, GameConnection *conn);
 void GameSrv_SendCreateNamedItem(GameSrv *srv, GameConnection *conn, GmItem *item);
+void GameSrv_BroadcastCreateNamedItem(GameSrv *srv, GmItem *item);
 void GameSrv_SendCreateUnamedItem(GameSrv *srv, GameConnection *conn, GmItem *item);
 void GameSrv_SendItemById(GameSrv *srv, GameConnection *conn, uint32_t item_id);
 void GameSrv_SendItemsInBag(GameSrv *srv, GameConnection *conn, GmBag *bag);
