@@ -28,6 +28,7 @@ typedef struct GameSrv_InstanceInfo {
     uint32_t district;
     uint8_t  language;
     uint8_t  is_observer;
+    uint8_t  unk;
 } GameSrv_InstanceInfo;
 
 typedef struct GameSrv_InstanceLoaded {
