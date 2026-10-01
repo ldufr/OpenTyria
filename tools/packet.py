@@ -274,7 +274,7 @@ class FileBuilder:
         self.desc_gs_srv = []
 
         for id, addr in enumerate(addr_ls_clt):
-            fields_addr, count, handler = self.proc.read(addr, 'III')
+            fields_addr, count = self.proc.read(addr, 'II')
 
             if count > 1:
                 fields = self.proc.read(fields_addr, 'I' * count)
@@ -300,7 +300,7 @@ class FileBuilder:
             self.desc_ls_srv.append(desc)
 
         for id, addr in enumerate(addr_gs_clt):
-            fields_addr, count, handler = self.proc.read(addr, 'III')
+            fields_addr, count = self.proc.read(addr, 'II')
 
             if count > 1:
                 fields = self.proc.read(fields_addr, 'I' * count)
